@@ -1,10 +1,10 @@
 ﻿import { StatusBar } from 'expo-status-bar';
-import { KeyboardAvoidingView, View, StyleSheet, Text, ScrollView, TextInput, Keyboard } from 'react-native';
+import { KeyboardAvoidingView, View, StyleSheet, Text, ScrollView, TextInput, Keyboard, Platform, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import Task from './components/Task';
 
 //----------------------------------------------
-//TO DO LIST APP
+//TO DO LIST APP Hi
 
 export default function App() {
 	const [task, setTask] = useState();
@@ -18,8 +18,8 @@ export default function App() {
 
 	const completeTask = (index) => {
 		let itemsCopy = [...taskItems];
-		itemCopy.splice(index, 1);
-		setTaskItems(itemsCopy);
+		itemsCopy.splice(index, 1);
+		setTaskItems(itemsCopy)
 	}
 
 	return(
@@ -28,29 +28,32 @@ export default function App() {
 			<View style={styles.tasksWrapper}>
 				<Text style={styles.sectionTitle}>Today's Tasks</Text>
 				<View style={styles.items}>
-					{/*This is where the tasks will go! */}
+					{/*This is where the tasks will go!
 						<Task text={'Task 1'} />
 						<Task text={'Task 2'} />
 						<Task text={'Task 3'} />
 						<Task text={'Task 4'} />
 						<Task text={'Task 5'} />
 	
-					{/*
-						tastItems.map((item, index) => {
+					*/}
+					{
+						taskItems.map((item, index) => {
 							return (
 								<TouchableOpacity key={index} onPress={() => completeTask(index)}>
 									<Task text={item} />
 								</TouchableOpacity>
 							)
 						})
-					}*/}
-
+					}
 				</View>
 
 			</View>
 
-			{/*Text Input for writing a task
-			<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.writeTaskWrapper}>
+			{/*Text Input for writing a task*/}
+			<KeyboardAvoidingView
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+				style={styles.writeTaskWrapper}
+			>
 				<TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={text => setTask(text)}/>
 				<TouchableOpacity onPress={() => handleAddTask()}>
 					<View style={styles.addWrapper}>
@@ -58,7 +61,7 @@ export default function App() {
 					</View>
 				</TouchableOpacity>
 			</KeyboardAvoidingView>
-			*/}
+			
 
 		</View>
 
@@ -89,15 +92,17 @@ export default function App() {
 			height: 60,
 			backgroundColor: '#fff',
 			borderRadius: 60,
-			justifyContents: 'center',
+			justifyContent: 'center',
 			alignItems: 'center',
+			borderColor: '#ffd500',
+			borderWidth: 1,
 		},
 		input: {
 			paddingVertical: 15,
 			paddingHorizontal: 15,
 			backgroundColor: '#fff',
 			borderRadius: 60,
-			borderColor: '#ffcfe6',
+			borderColor: '#ffd500',
 			borderWidth: 1,
 			width: 250,
 		},
@@ -106,7 +111,7 @@ export default function App() {
 			bottom: 60,
 			width: '100%',
 			flexDirection: 'row',
-			justifyContents: 'space-around',
+			justifyContent: 'space-around',
 			alignItems: 'center',
 		},
 	});
