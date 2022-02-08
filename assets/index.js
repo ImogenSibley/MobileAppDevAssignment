@@ -1,0 +1,1 @@
+export const rocket = require('./rocket.png'); 
