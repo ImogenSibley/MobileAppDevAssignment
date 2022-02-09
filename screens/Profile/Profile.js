@@ -4,12 +4,8 @@ import { Text, View, SafeAreaView, StyleSheet } from 'react-native';
 const Profile = () => {
 	return (
 		<SafeAreaView style={styles.root}>
-			<View>
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 				<Text>Profile</Text>
-				<Button
-					title="<Back"
-					onPress={() => this.props.navigation.goBack()}
-				/>
 			</View>
 		</SafeAreaView>
 	);

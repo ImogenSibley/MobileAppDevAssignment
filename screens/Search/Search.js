@@ -4,7 +4,7 @@ import { Text, View, SafeAreaView, StyleSheet } from 'react-native';
 const Search = () => {
 	return (
 		<SafeAreaView style={styles.root}>
-			<View>
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 				<Text>Search</Text>
 			</View>
 		</SafeAreaView>
