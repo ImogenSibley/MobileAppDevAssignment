@@ -1,26 +1,28 @@
-﻿import { StatusBar } from 'expo-status-bar';
-import { KeyboardAvoidingView, View, StyleSheet, Text, ScrollView, TextInput, Keyboard, Platform, TouchableOpacity, SafeAreaView } from 'react-native';
-import React, { useState } from 'react';
+﻿import React, { Component } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import Login from './screens/Login';
+import Home from './screens/Home';
+import Profile from './screens/Profile';
+import Search from './screens/Search';
+
 
 //----------------------------------------------
 //App Main
 
+const Stack = createNativeStackNavigator();
 
-const App = () => {
-	return (
-	<SafeAreaView style={styles.root}>
-		<Login />	
-		</SafeAreaView>
-	);
+function App() {
+		return (
+			<NavigationContainer>
+				<Stack.Navigator >
+					<Stack.Screen name="Home" component={Home} />
+					<Stack.Screen name="Profile" component={Profile} />
+					<Stack.Screen name="Search" component={Profile} />
+				</Stack.Navigator>
+			</NavigationContainer>
+		);
 }
-
-const styles = StyleSheet.create({
-	root: {
-		flex: 1,
-		backgroundColor: '#ffcfe6',
-	}
-
-});
 
 export default App;

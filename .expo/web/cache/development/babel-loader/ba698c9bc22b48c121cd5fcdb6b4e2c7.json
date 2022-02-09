@@ -1,0 +1,1 @@
+{"ast":null,"code":"export { default } from \"./Profile\";","map":{"version":3,"sources":["F:/Year 3/Mobile App Dev/MADAssignment/master/screens/Profile/index.js"],"names":["default"],"mappings":"AAAA,SAASA,OAAT","sourcesContent":["export { default } from './Profile';"]},"metadata":{},"sourceType":"module"}
