@@ -1,24 +1,33 @@
 import React from 'react';
-import { useState } from 'react'; 
-import { View, Text, StyleSheet, TextInput, Image } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Image, SafeAreaView } from 'react-native';
 //import { rocket } from '../assets';
 import CustomInput from '../../components/customInput';
 import CustomButton from '../../components/customButton';
 //----------------------------------------------
 //Login Screen
 
-const Login = () => {
+const Login = ({ navigation }) => {
 	
-	const [username, setUsername] = useState('');
+	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 
 	const onLoginPressed = () => {
-		console.warn("Username: "+username);
-		console.warn("Password: "+password);
+		console.warn("User: "+email);
+		console.warn("Password: " + password);
+		//if login authenticated, navigate to home
+		//GET login details
+		navigation.navigate("Home");
+	}
+
+	const onSignUpPressed = () => {
+		console.warn("Sign Up!");
+		navigation.navigate("Signup");
 	}
 
 	return (
-		<View style={styles.container}>
+		<SafeAreaView style={styles.root}>
+			<View style={styles.container}>
 			{/*Spacebook Logo*/}
 			{/*Login Title*/}
 			<View style={styles.titleContainer}>
@@ -27,20 +36,28 @@ const Login = () => {
 			</View>
 
 			{/*Text Input for logging in*/}
-			<CustomInput placeholder="Username" value={username} setValue={setUsername} />
+			<CustomInput placeholder="Email" value={email} setValue={setEmail} />
 			<CustomInput secureTextEntry={true} placeholder="Password" value={password} setValue={setPassword} />
 
 			{/*Button to Click Login*/}
 			<CustomButton text="Login" onPress={onLoginPressed} />
-		</View>
+
+			{/*Button to Sign Up*/}
+			<CustomButton text="Create an Account" onPress={onSignUpPressed} />
+			</View>
+		</SafeAreaView>
 	);
 }
 
 const styles = StyleSheet.create({
-	logo: {
-		width: 120,
-		height: 120,
+	root: {
+		flex: 1,
+		backgroundColor: '#ffcfe6',
 	},
+	//logo: {
+	//	width: 120,
+	//	height: 120,
+	//},
 	container: {
 		flex: 1,
 		justifyContent: 'space-evenly',

@@ -1,0 +1,1 @@
+{"ast":null,"code":"export { default } from \"./Logout\";","map":{"version":3,"sources":["F:/Year 3/Mobile App Dev/MADAssignment/master/screens/Logout/index.js"],"names":["default"],"mappings":"AAAA,SAASA,OAAT","sourcesContent":["export { default } from './Logout';"]},"metadata":{},"sourceType":"module"}

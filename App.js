@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import 'react-native-gesture-handler';
 
 import Login from './screens/Login';
-//import Signup from './screens/Signup';
+import Signup from './screens/Signup';
 import Home from './screens/Home';
 import Profile from './screens/Profile';
 import Search from './screens/Search';
@@ -23,24 +23,25 @@ const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-//function App(){
-//    return (
-//    <NavigationContainer>
-//      <Stack.Navigator>
-//        <Stack.Screen
-//          name="Login"
-//          component={Login}
-//          options={{ headerShown: false }}
-//        />
-//        <Stack.Screen name="Home" component={Home} />
-//      </Stack.Navigator>
-//    </NavigationContainer>
-//  );
-//}
-
-function HomeScreen() {
+function App(){
     return (
-         <Drawer.Navigator initialRouteName="Home">
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Home" component={TabHome} />
+        <Stack.Screen name="Signup" component={Signup} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+function DrawerHome() {
+    return (
+         <Drawer.Navigator initialRouteName="Login">
              <Drawer.Screen name="Home" component={Home}  />
              <Drawer.Screen name="Account Settings" component={AccountSettings} />
              <Drawer.Screen name="Logout" component={Logout} /> 
@@ -48,9 +49,8 @@ function HomeScreen() {
     );
 }
 
-function App() {
+function TabHome() {
     return ( 
-        <NavigationContainer>
             <Tab.Navigator //main page when logged in
                 screenOptions={({ route }) => ({
                     tabBarIcon: ({ focused, color, size }) => {
@@ -77,12 +77,11 @@ function App() {
                     tabBarInactiveTintColor: '#28a3a5',
                 })}
             >
-                <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+                <Tab.Screen name="Home" component={DrawerHome} options={{ headerShown: false }} />
                 <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }}/>
                 <Tab.Screen name="Search" component={Search} options={{ headerShown: false }}/>
      
             </Tab.Navigator>
-       </NavigationContainer>
     );
 }
 
