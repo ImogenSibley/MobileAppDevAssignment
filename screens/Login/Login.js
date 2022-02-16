@@ -25,9 +25,9 @@ const Login = ({ navigation }) => {
 				"password": password
 			})
 		}).then((response) => {
-			if (response.status === 201) {
-				return response.json();
+			if (response.status === 201 || response.status === 200 ) {
 				console.log("fetch successful!")
+				return response.json();
 			} else if (response.status === 400) {
 				setErrorMess("This user does not exist.");
 				throw "Bad data - Non existant user?"
