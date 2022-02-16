@@ -11,14 +11,38 @@ const Login = ({ navigation }) => {
 	
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [errorMess, setErrorMess] = useState('');
 
 	const onLoginPressed = () => {
-		console.warn("User: "+email);
-		console.warn("Password: " + password);
-		//if login authenticated, navigate to home
-		//GET login details
-		navigation.navigate("Home");
+		//GET login details from server
+		return fetch("http://localhost:3333/api/1.0.0/login", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				"email": email,
+				"password": password
+			})
+		}).then((response) => {
+			if (response.status === 201) {
+				return response.json();
+				console.log("fetch successful!")
+			} else if (response.status === 400) {
+				setErrorMess("This user does not exist.");
+				throw "Bad data - Non existant user?"
+			} else {
+				throw "Something went wrong: " + response.status
+			}
+		}).then((responseJson) => {
+			navigation.navigate("Home");
+		}).catch((err) => {
+			console.log(err);
+		})
+
 	}
+		//if authentic user 
+		//navigation.navigate("Home");
 
 	const onSignUpPressed = () => {
 		console.warn("Sign Up!");
@@ -32,8 +56,9 @@ const Login = ({ navigation }) => {
 			{/*Login Title*/}
 			<View style={styles.titleContainer}>
 				<Text style={styles.sectionTitle}>Login</Text>
-
 			</View>
+
+			<Text>{errorMess}</Text>
 
 			{/*Text Input for logging in*/}
 			<CustomInput placeholder="Email" value={email} setValue={setEmail} />
