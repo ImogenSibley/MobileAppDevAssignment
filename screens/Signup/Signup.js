@@ -8,8 +8,8 @@ import CustomButton from '../../components/customButton';
 const Signup = ({ navigation }) => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const [first_name, setFirstName] = useState('');
-	const [last_name, setLastName] = useState('');
+	const [firstName, setFirstName] = useState('');
+	const [lastName, setLastName] = useState('');
 	const [passwordCheck, setPasswordCheck] = useState('');
 	const [errorMess, setErrorMess] = useState('');
 
@@ -21,7 +21,7 @@ const Signup = ({ navigation }) => {
 	const onSignUpPressed = () => {
 
 		// Check all values are correct/filled in
-		if (first_name != '' && last_name != '' && email != '' && password != '' && passwordCheck != '') {
+		if (firstName != '' && lastName != '' && email != '' && password != '' && passwordCheck != '') {
 
 			// Check email is email
 			validateEmail(email);
@@ -38,8 +38,8 @@ const Signup = ({ navigation }) => {
 							"Content-Type": "application/json"
 						},
 						body: JSON.stringify({
-							"first_name": first_name,
-							"last_name": last_name,
+							"first_name": firstName,
+							"last_name": lastName,
 							"email": email,
 							"password": password
 						})
@@ -89,8 +89,8 @@ const Signup = ({ navigation }) => {
 					<Text>{errorMess}</Text>
 
 					{/*Text Input for Creating an Account*/}
-					<CustomInput placeholder="First Name" value={first_name} setValue={setFirstName} />
-					<CustomInput placeholder="Last Name" value={last_name} setValue={setLastName} />
+					<CustomInput placeholder="First Name" value={firstName} setValue={setFirstName} />
+					<CustomInput placeholder="Last Name" value={lastName} setValue={setLastName} />
 					<CustomInput placeholder="Email Address" value={email} setValue={setEmail} />
 					<CustomInput secureTextEntry={true} placeholder="Password" value={password} setValue={setPassword} />
 					<CustomInput secureTextEntry={true} placeholder="Confirm Password" value={passwordCheck} setValue={setPasswordCheck} />
