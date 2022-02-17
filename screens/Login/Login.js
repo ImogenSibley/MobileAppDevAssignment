@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Image, SafeAreaView } from 'react-native';
-//import { rocket } from '../assets';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomInput from '../../components/customInput';
 import CustomButton from '../../components/customButton';
 //----------------------------------------------
@@ -13,7 +13,7 @@ const Login = ({ navigation }) => {
 	const [password, setPassword] = useState('');
 	const [errorMess, setErrorMess] = useState('');
 
-	const onLoginPressed = () => {
+	const onLoginPressed = async () => {
 		//GET login details from server
 		return fetch("http://localhost:3333/api/1.0.0/login", {
 			method: "POST",
@@ -34,18 +34,17 @@ const Login = ({ navigation }) => {
 			} else {
 				throw "Something went wrong: " + response.status
 			}
-		}).then((responseJson) => {
-			navigation.navigate("Home");
+		}).then(async (responseJson) => {
+            //console.log(responseJson);
+			await AsyncStorage.setItem('@session_token', responseJson.token);
+            navigation.navigate("Home");
 		}).catch((err) => {
 			console.log(err);
 		})
-
 	}
-		//if authentic user 
-		//navigation.navigate("Home");
 
 	const onSignUpPressed = () => {
-		console.warn("Sign Up!");
+		//console.warn("Sign Up!");
 		navigation.navigate("Signup");
 	}
 

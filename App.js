@@ -22,6 +22,7 @@ import Logout from './screens/Logout';
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+  
 
 function App(){
     return (
