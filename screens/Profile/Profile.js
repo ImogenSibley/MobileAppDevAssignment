@@ -1,15 +1,18 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { Text, View, SafeAreaView, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import CustomButton from '../../components/customButton'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = () => {
+    const [email, setEmail] = useState('');
+	const [firstName, setFirstName] = useState('');
+	const [lastName, setLastName] = useState('');
+    const [friendCount, setFriendCount] = useState('');
 
-	const getFirstName = async () => {
+	const getData = async () => {
         const value = await AsyncStorage.getItem('@session_token');
         const userID = await AsyncStorage.getItem('@user_id')
-        const firstName = await AsyncStorage.getItem('@first_name');
-        //console.log(userID);
         return fetch("http://localhost:3333/api/1.0.0/user/"+userID, {
             'headers': {
             'X-Authorization':  value
@@ -25,9 +28,18 @@ const Profile = () => {
             }
         }).then(async (responseJson) => {
             console.log(responseJson);
-			//const firstName = await AsyncStorage.getItem('@first_name');
-            console.log(firstName.toString());
-            return firstName;
+            let first = responseJson.first_name; 
+            setFirstName(first);
+            let last = responseJson.last_name; 
+            setLastName(last);
+            let emailAddress = responseJson.email;
+            setEmail(emailAddress);
+            let friends = responseJson.friend_count;
+            setFriendCount = friends;
+            //console.log(firstName);
+            //console.log(email);
+            //console.log(lastName);
+            //console.log(friends);
         })
         .catch((error) => {
             console.log(error);
@@ -41,17 +53,24 @@ const Profile = () => {
         }
     };
 
+    useEffect(() => {
+        checkLoggedIn();
+        getData();
+    }, [])
+
 	return (
+        
 		<SafeAreaView style={styles.root}>
 			<View style={styles.container}>
                 <View style={styles.header}></View>
                 <Image style={styles.avatar} source={{uri: 'https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg'}}/>
                 <View style={styles.body}>
                     <View style={styles.bodyContent}>
-                        <Text style={styles.name}>User</Text>
-                        <Text style={styles.info}>Email Address</Text>
+                        <Text style={styles.name}>{firstName} {lastName}</Text>
+                        <Text style={styles.info}>{email}</Text>
+                        <Text style={styles.info}>{friendCount}</Text>
                         {/*Button to Post*/}
-			            <CustomButton text="Add Friend" onPress={getFirstName}/>
+			            <CustomButton text="Add Friend"/>
                         {/*Button to Post*/}
 			            <CustomButton text="View Friends List"/>
 
