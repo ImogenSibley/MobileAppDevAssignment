@@ -11,6 +11,8 @@ import Login from './screens/Login';
 import Signup from './screens/Signup';
 import Home from './screens/Home';
 import Profile from './screens/Profile';
+import Friends from './screens/Friends';
+import FriendRequests from './screens/FriendRequests';
 import Search from './screens/Search';
 import AccountSettings from './screens/AccountSettings';
 import Logout from './screens/Logout';
@@ -29,11 +31,11 @@ function App(){
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="Login"
-          component={Login}
+          name="Login" //make sure this is login unless testing
+          component={Login} //make sure this is login unless testing
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="Home" component={TabHome} />
+        <Stack.Screen name="Home" component={TabHome} options={{header: (props) => null }}/>
         <Stack.Screen name="Signup" component={Signup} />
       </Stack.Navigator>
     </NavigationContainer>
@@ -67,10 +69,17 @@ function TabHome() {
                                 : 'ios-person-outline';
                         } else if (route.name === 'Search' ) {
                             iconName = focused
-                                ? 'ios-search'
-                                : 'ios-search-outline';
+                                ? 'ios-rocket'
+                                : 'ios-rocket-outline';
+                        } else if (route.name === 'Friends' ) {
+                            iconName = focused
+                                ? 'ios-people'
+                                : 'ios-people-outline';
+                        } else if (route.name === 'Friend Requests' ) {
+                            iconName = focused
+                                ? 'ios-person-add'
+                                : 'ios-person-add-outline';
                         }
-
                         // You can return any component that you like here!
                         return <Ionicons name={iconName} size={size} color={color} />;
                     },
@@ -81,6 +90,8 @@ function TabHome() {
                 <Tab.Screen name="Home" component={DrawerHome} options={{ headerShown: false }} />
                 <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }}/>
                 <Tab.Screen name="Search" component={Search} options={{ headerShown: false }}/>
+                <Tab.Screen name="Friends" component={Friends} options={{ headerShown: false }}/>
+                <Tab.Screen name="Friend Requests" component={FriendRequests} options={{ headerShown: false }}/>
      
             </Tab.Navigator>
     );

@@ -92,9 +92,10 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 40,
 	},
 	sectionTitle: {
-		fontSize: 24,
-		fontFamily: 'helvetica',
-	}
+		fontSize:28,
+        color: "#696969",
+        fontWeight: "600"
+    }
 });
 
 export default Logout;

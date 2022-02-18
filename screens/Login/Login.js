@@ -37,6 +37,8 @@ const Login = ({ navigation }) => {
 		}).then(async (responseJson) => {
             //console.log(responseJson);
 			await AsyncStorage.setItem('@session_token', responseJson.token);
+			await AsyncStorage.setItem('@user_id', responseJson.id);
+			await AsyncStorage.setItem('@first_name', responseJson.firstName);
             navigation.navigate("Home");
 		}).catch((err) => {
 			console.log(err);
@@ -93,8 +95,9 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 40,
 	},
 	sectionTitle: {
-		fontSize: 24,
-		fontFamily: 'helvetica',
+		fontSize:28,
+        color: "#696969",
+        fontWeight: "600"
 	}
 });
 

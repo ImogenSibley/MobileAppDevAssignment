@@ -1,11 +1,11 @@
 import React from 'react';
 import { Text, View, SafeAreaView, StyleSheet } from 'react-native';
 
-const Friends = () => {
+const FriendRequests = () => {
 	return (
 		<SafeAreaView style={styles.root}>
 			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-				<Text>Friends</Text>
+				<Text>Friend Requests</Text>
 			</View>
 		</SafeAreaView>
 	);
@@ -19,4 +19,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default Friends;
+export default FriendRequests;

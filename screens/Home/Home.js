@@ -64,10 +64,10 @@ class Home extends Component {
     }
   };
 
-  getUserInfo = async () => {
-      let userFirst = await AsyncStorage. getItem('@user_givenname');
-      let parsedUserFirst = JSON. parse(userFirst);
-  }
+  //getUserInfo = async () => {
+  //    let userFirst = await AsyncStorage. getItem('@user_givenname');
+  //    let parsedUserFirst = JSON. parse(userFirst);
+  //}
 
   render() {
 
@@ -89,7 +89,7 @@ class Home extends Component {
 			{/*Spacebook Logo*/}
 			{/*Homepage*/}
             <View style={styles.titleContainer}>
-                <Text style={styles.sectionTitle}>User's Name</Text>
+                <Text style={styles.sectionTitle}>Home</Text>
 			</View>
           
 			{/*Text Input for Writing a Post*/}
@@ -126,8 +126,9 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 40,
 	},
 	sectionTitle: {
-		fontSize: 24,
-		fontFamily: 'helvetica',
+		fontSize:28,
+        color: "#696969",
+        fontWeight: "600"
 	}
 });
 
