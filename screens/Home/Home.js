@@ -5,37 +5,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomInput from '../../components/customInput';
 import CustomButton from '../../components/customButton';
 
-class Home extends Component {
-	constructor(props){
-    super(props);
+const Home = () => {
+	const [firstName, setFirstName] = useState('');
 
-    //const [post, setPost] = useState("")
-    //const [posts, setPosts] = useState([])
-
-    this.state = {
-      isLoading: true,
-      listData: []
-    }
-  }
-
-  componentDidMount() {
-    this.unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.checkLoggedIn();
-    });
-  
-    this.getData();
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
-  getData = async () => {
-    const value = await AsyncStorage.getItem('@session_token');
-    return fetch("http://localhost:3333/api/1.0.0/search", {
-          'headers': {
+	const getData = async () => {
+        const value = await AsyncStorage.getItem('@session_token');
+        const userID = await AsyncStorage.getItem('@user_id')
+        return fetch("http://localhost:3333/api/1.0.0/user/"+userID, {
+            'headers': {
             'X-Authorization':  value
-          }
+            }
         })
         .then((response) => {
             if(response.status === 200){
@@ -45,65 +24,47 @@ class Home extends Component {
             }else{
                 throw 'Something went wrong';
             }
-        })
-        .then((responseJson) => {
-          this.setState({
-            isLoading: false,
-            listData: responseJson
-          })
+        }).then(async (responseJson) => {
+            console.log(responseJson);
+            let first = responseJson.first_name; 
+            setFirstName(first);
         })
         .catch((error) => {
             console.log(error);
         })
-  }
-
-  checkLoggedIn = async () => {
-    const value = await AsyncStorage.getItem('@session_token');
-    if (value == null) {
-        this.props.navigation.navigate('Login');
     }
-  };
+    
+    const checkLoggedIn = async () => {
+        const value = await AsyncStorage.getItem('@session_token');
+        if (value == null) {
+            this.props.navigation.navigate('Login');
+        }
+    };
 
-  //getUserInfo = async () => {
-  //    let userFirst = await AsyncStorage. getItem('@user_givenname');
-  //    let parsedUserFirst = JSON. parse(userFirst);
-  //}
+    useEffect(() => {
+        checkLoggedIn();
+        getData();
+    }, [])
 
-  render() {
-
-    if (this.state.isLoading){
       return (
         <SafeAreaView style={styles.root}>
-			    <View style={styles.container}>
-			    {/*Loading Title*/}
-			    <View style={styles.titleContainer}>
-				    <Text style={styles.sectionTitle}>Loading...</Text>
-			    </View>
-			    </View>
-		    </SafeAreaView>
-      );
-    }else{
-      return (
-        <SafeAreaView style={styles.root}>
+        <View style={styles.header}>
 			<View style={styles.container}>
 			{/*Spacebook Logo*/}
 			{/*Homepage*/}
-            <View style={styles.titleContainer}>
-                <Text style={styles.sectionTitle}>Home</Text>
-			</View>
+                <View style={styles.titleContainer}>
+                    <Text style={styles.sectionTitle}>Welcome back {firstName}!</Text>
+			    </View>
           
-			{/*Text Input for Writing a Post*/}
-			<CustomInput placeholder="Write your post here..."/>
-			{/*Button to Post*/}
-			<CustomButton text="Post"/>
+			    {/*Text Input for Writing a Post*/}
+			    <CustomInput placeholder="Write your post here..."/>
+			    {/*Button to Post*/}
+			    <CustomButton text="Post"/>
+                {/*Posts go here*/}
 			</View>
-
-            {/*Posts go here*/}
-
+        </View>
 		</SafeAreaView>
       );
-    }
-  }
 }
 
 const styles = StyleSheet.create({
@@ -111,22 +72,29 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: '#ffcfe6',
 	},
+     header:{
+        backgroundColor: "#45ded0",
+        height:200,
+    },
 	//logo: {
 	//	width: 120,
 	//	height: 120,
 	//},
+    body:{
+        marginTop:40,
+    },
 	container: {
 		flex: 1,
-		justifyContent: 'flex-start',
-		alignItems: 'center',
-		padding: 30
+        alignItems: 'center',
+        padding:30,
 	},
 	titleContainer: {
 		paddingTop: 80,
 		paddingHorizontal: 40,
+        padding: 30,
 	},
 	sectionTitle: {
-		fontSize:28,
+        fontSize:28,
         color: "#696969",
         fontWeight: "600"
 	}

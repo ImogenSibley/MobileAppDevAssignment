@@ -61,9 +61,8 @@ const Profile = () => {
 	return (
         
 		<SafeAreaView style={styles.root}>
-			<View style={styles.container}>
-                <View style={styles.header}></View>
-                <Image style={styles.avatar} source={{uri: 'https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg'}}/>
+            <View style={styles.header}></View>
+            <Image style={styles.avatar} source={{uri: 'https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg'}}/>
                 <View style={styles.body}>
                     <View style={styles.bodyContent}>
                         <Text style={styles.name}>{firstName} {lastName}</Text>
@@ -73,10 +72,8 @@ const Profile = () => {
 			            <CustomButton text="Add Friend"/>
                         {/*Button to Post*/}
 			            <CustomButton text="View Friends List"/>
-
                     </View>
                 </View>
-            </View>
 		</SafeAreaView>
 	);
 }
