@@ -4,13 +4,13 @@ import { Text, View, SafeAreaView, StyleSheet, Image, TouchableOpacity } from 'r
 import CustomButton from '../../components/customButton'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Profile = () => {
+const ProfileOtherUser = () => {
     const [email, setEmail] = useState('');
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
     const [friendCount, setFriendCount] = useState('');
 
-	const getUserData = async () => {
+	const getData = async () => {
         const value = await AsyncStorage.getItem('@session_token');
         const userID = await AsyncStorage.getItem('@user_id')
         return fetch("http://localhost:3333/api/1.0.0/user/"+userID, {
@@ -49,13 +49,9 @@ const Profile = () => {
         }
     };
 
-    //const onViewFriendsListPressed = () => {
-	//	this.props.navigation.navigate("Friends");
-	//};
-
     useEffect(() => {
         checkLoggedIn();
-        getUserData();
+        getData();
     }, [])
 
 	return (
@@ -68,7 +64,9 @@ const Profile = () => {
                         <Text style={styles.name}>{firstName} {lastName}</Text>
                         <Text style={styles.info}>{email}</Text>
                         <Text style={styles.info}>{friendCount}</Text>
-			            <CustomButton text="View Friends List" />
+                        {/*If not already friends, show button to add user as friend*/}
+			            <CustomButton text="Add Friend"/>
+			            <CustomButton text="View Friends List"/>
                     </View>
                 </View>
 		</SafeAreaView>
@@ -115,4 +113,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Profile;
+export default ProfileOtherUser;

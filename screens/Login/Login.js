@@ -35,7 +35,6 @@ const Login = ({ navigation }) => {
 				throw "Something went wrong: " + response.status
 			}
 		}).then(async (responseJson) => {
-            //console.log(responseJson);
 			await AsyncStorage.setItem('@session_token', responseJson.token);
 			await AsyncStorage.setItem('@user_id', responseJson.id);
 			await AsyncStorage.setItem('@first_name', responseJson.firstName);
@@ -46,7 +45,6 @@ const Login = ({ navigation }) => {
 	}
 
 	const onSignUpPressed = () => {
-		//console.warn("Sign Up!");
 		navigation.navigate("Signup");
 	}
 

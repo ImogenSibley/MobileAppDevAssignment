@@ -7,11 +7,39 @@ import CustomButton from '../../components/customButton';
 
 const Home = () => {
 	const [firstName, setFirstName] = useState('');
+    const [post, setPost] = useState('');
+    const [posts, setPosts] = useState([]);
 
-	const getData = async () => {
+	const getFirstName = async () => {
         const value = await AsyncStorage.getItem('@session_token');
         const userID = await AsyncStorage.getItem('@user_id')
         return fetch("http://localhost:3333/api/1.0.0/user/"+userID, {
+            'headers': {
+            'X-Authorization':  value
+            }
+        })
+        .then((response) => {
+            if(response.status === 200){
+                return response.json()
+            }else if(response.status === 401){
+              navigation.navigate("Login");
+            }else{
+                throw 'Something went wrong';
+            }
+        }).then((responseJson) => {
+            //console.log(responseJson);
+            let first = responseJson.first_name; 
+            setFirstName(first);
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+    }
+
+    const getAllPosts = async () => {
+    const value = await AsyncStorage.getItem('@session_token');
+        const userID = await AsyncStorage.getItem('@user_id')
+        return fetch("http://localhost:3333/api/1.0.0/user/"+userID+"/post", {
             'headers': {
             'X-Authorization':  value
             }
@@ -24,10 +52,14 @@ const Home = () => {
             }else{
                 throw 'Something went wrong';
             }
-        }).then(async (responseJson) => {
+        }).then((responseJson) => {
             console.log(responseJson);
-            let first = responseJson.first_name; 
-            setFirstName(first);
+            //setPosts([...posts, post])
+            //let postID = responseJson.post_id;
+            //let postText = responseJson.text;
+            //let postTimeStamp = responseJson.timestamp;
+            //let postAuthor = responseJson.author;
+            //let numberOfLikes = responseJson.numLikes;
         })
         .catch((error) => {
             console.log(error);
@@ -37,13 +69,14 @@ const Home = () => {
     const checkLoggedIn = async () => {
         const value = await AsyncStorage.getItem('@session_token');
         if (value == null) {
-            this.props.navigation.navigate('Login');
+            navigation.navigate('Login');
         }
     };
 
     useEffect(() => {
         checkLoggedIn();
-        getData();
+        getFirstName();
+        getAllPosts();
     }, [])
 
       return (
@@ -61,6 +94,7 @@ const Home = () => {
 			    {/*Button to Post*/}
 			    <CustomButton text="Post"/>
                 {/*Posts go here*/}
+                <Text style={styles.sectionTitle}>Post Displays Here: {post}</Text>
 			</View>
         </View>
 		</SafeAreaView>
@@ -76,10 +110,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#45ded0",
         height:200,
     },
-	//logo: {
-	//	width: 120,
-	//	height: 120,
-	//},
     body:{
         marginTop:40,
     },
