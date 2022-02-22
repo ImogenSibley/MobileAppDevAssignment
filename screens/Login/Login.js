@@ -78,10 +78,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: '#ffcfe6',
 	},
-	//logo: {
-	//	width: 120,
-	//	height: 120,
-	//},
 	container: {
 		flex: 1,
 		justifyContent: 'space-evenly',

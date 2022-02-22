@@ -7,8 +7,7 @@ import CustomButton from '../../components/customButton';
 
 const Home = () => {
 	const [firstName, setFirstName] = useState('');
-    const [post, setPost] = useState('');
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState('');
 
 	const getFirstName = async () => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -54,17 +53,27 @@ const Home = () => {
             }
         }).then((responseJson) => {
             console.log(responseJson);
-            //setPosts([...posts, post])
-            //let postID = responseJson.post_id;
-            //let postText = responseJson.text;
-            //let postTimeStamp = responseJson.timestamp;
-            //let postAuthor = responseJson.author;
-            //let numberOfLikes = responseJson.numLikes;
+            setPosts(responseJson);
         })
         .catch((error) => {
             console.log(error);
         })
     }
+    const ItemView = ({item}) => {
+    return (
+        <Text style={styles.post}>
+        {item.id}{item.author.first_name}{' '}{item.author.last_name}{' - '}{item.text}{' '}{item.timestamp}{' - Likes: '}{item.numLikes}
+        </Text>
+    );
+  }
+
+  const ItemSeperatorView = () => {
+    return (
+        <View 
+            style={{height: 0.5, width: '100%', backgroundColor: 'white'}}
+        />
+    );
+  }
     
     const checkLoggedIn = async () => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -94,7 +103,14 @@ const Home = () => {
 			    {/*Button to Post*/}
 			    <CustomButton text="Post"/>
                 {/*Posts go here*/}
-                <Text style={styles.sectionTitle}>Post Displays Here: {post}</Text>
+                <View style={styles.postContainer}>
+                    <FlatList
+                        data={posts}
+                        keyExtractor={(item, index) => index.toString()}
+                        ItemSeperatorComponent={ItemSeperatorView}
+                        renderItem={ItemView}
+                    />
+                </View>
 			</View>
         </View>
 		</SafeAreaView>
@@ -106,7 +122,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: '#ffcfe6',
 	},
-     header:{
+    header:{
         backgroundColor: "#45ded0",
         height:200,
     },
@@ -126,8 +142,23 @@ const styles = StyleSheet.create({
 	sectionTitle: {
         fontSize:28,
         color: "#696969",
-        fontWeight: "600"
-	}
+        fontWeight: "600",
+        alignItems: 'center',
+	},
+    postContainer: {
+    	backgroundColor: '#ffffff',
+		width: '90%',
+		borderColor: '#45ded0',
+		borderWidth: 2,	
+    },
+    post: {
+        fontSize:16,
+        color: "#696969",
+        fontWeight: 'bold',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+    }
 });
 
 export default Home;

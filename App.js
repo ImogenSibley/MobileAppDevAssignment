@@ -16,6 +16,7 @@ import FriendRequests from './screens/FriendRequests';
 import Search from './screens/Search';
 import AccountSettings from './screens/AccountSettings';
 import Logout from './screens/Logout';
+import OtherProfile from './screens/OtherProfile';
 
 
 //----------------------------------------------
@@ -37,6 +38,8 @@ function App(){
         />
         <Stack.Screen name="Home" component={TabHome} options={{header: (props) => null }}/>
         <Stack.Screen name="Signup" component={Signup} />
+        <Stack.Screen name="Friend Profile" component={OtherProfile} />
+        <Stack.Screen name="Friends" component={Friends} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -4,16 +4,15 @@ import { Text, View, SafeAreaView, StyleSheet, Image, TouchableOpacity } from 'r
 import CustomButton from '../../components/customButton'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ProfileOtherUser = () => {
+const OtherProfile = (requestedUserID) => {
     const [email, setEmail] = useState('');
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
     const [friendCount, setFriendCount] = useState('');
 
-	const getData = async () => {
+	const getUserData = async (requestedUserID) => {
         const value = await AsyncStorage.getItem('@session_token');
-        const userID = await AsyncStorage.getItem('@user_id')
-        return fetch("http://localhost:3333/api/1.0.0/user/"+userID, {
+        return fetch("http://localhost:3333/api/1.0.0/user/"+requestedUserID, {
             'headers': {
             'X-Authorization':  value
             }
@@ -51,7 +50,7 @@ const ProfileOtherUser = () => {
 
     useEffect(() => {
         checkLoggedIn();
-        getData();
+        getUserData(requestedUserID);
     }, [])
 
 	return (
@@ -113,4 +112,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ProfileOtherUser;
+export default OtherProfile;

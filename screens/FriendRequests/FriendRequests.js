@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet, TextInput, Image, SafeAreaView, FlatList, ScrollView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomButtonSmall from '../../components/customButtonSmall';
 
 const FriendRequests = () => {
 	const [friendRequests, setFriendRequests] = useState('');
@@ -29,6 +30,58 @@ const FriendRequests = () => {
             console.log(error);
         })
     }
+
+    const onAccept = async (requestedUserID) => {
+        const value = await AsyncStorage.getItem('@session_token');
+        return fetch("http://localhost:3333/api/1.0.0/friendrequests/"+requestedUserID, {
+            method: "POST",
+            'headers': {
+            'X-Authorization':  value
+            }
+        })
+        .then((response) => {
+            //console.log(response.status);
+            if(response.status === 200 || response.status === 201){
+                return response.json()
+            }else if(response.status === 401){
+              this.props.navigation.navigate("Login");
+            }else{
+                throw 'Something went wrong';
+            }
+        }).then((responseJson) => {
+            console.log(responseJson);
+            console.log("Request Accepted.");
+        })
+        .catch((error) => {
+            console.warn(error);
+        })
+    }
+
+    const onReject = async (requestedUserID) => {
+        const value = await AsyncStorage.getItem('@session_token');
+        return fetch("http://localhost:3333/api/1.0.0/friendrequests/"+requestedUserID, {
+            method: "DELETE",
+            'headers': {
+            'X-Authorization':  value
+            }
+        })
+        .then((response) => {
+            console.log(response.status);
+            if(response.status === 200 || response.status === 201){
+                return response.json()
+            }else if(response.status === 401){
+              this.props.navigation.navigate("Login");
+            }else{
+                throw 'Something went wrong';
+            }
+        }).then((responseJson) => {
+            console.log(responseJson);
+            console.log("Request Rejected.");
+        })
+        .catch((error) => {
+            console.warn(error);
+        })
+    }
     
     const checkLoggedIn = async () => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -38,13 +91,22 @@ const FriendRequests = () => {
     };
 
     const ItemView = ({item}) => {
-        return (
-            <View>
-                <Text style={styles.text}>
-                {item.id}{item.first_name}{' '}{item.last_name}
-                </Text>
-            </View>
-        );
+        if (friendRequests.length === 0){
+            console.log("0 New Requests.");
+            return (
+                <View>
+                    <Text style={styles.text}>0 New Requests.</Text>
+                </View>
+            );
+        } else {
+            return (
+                <View>
+                    <Text style={styles.text}>
+                        {item.id}{item.first_name}{' '}{item.last_name}{' '}<CustomButtonSmall text="Accept" onPress={() => onAccept(item.user_id)}/>{' '}<CustomButtonSmall text="Reject" onPress={() => onReject(item.user_id)}/>
+                    </Text>
+                </View>
+            );
+        } 
     }
 
     const ItemSeperatorView = () => {

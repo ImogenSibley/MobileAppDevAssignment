@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet, TextInput, Image, SafeAreaView, FlatList, ScrollView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomButtonSmall from '../../components/customButtonSmall';
 
-const Friends = () => {
+const Friends = ({ navigation }) => {
     const [friendList, setFriendList] = useState('');
 
 	const getFriendList = async () => {
@@ -29,6 +30,12 @@ const Friends = () => {
             console.log(error);
         })
     }
+
+    const onViewProfilePressed = (requestedUserID) => {
+		console.warn("Viewing Profile with User ID " +requestedUserID);
+        //store this ID to fetch details from user ID on their profile
+		navigation.navigate("Friend Profile", {requestedUserID: requestedUserID});
+	}
     
     const checkLoggedIn = async () => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -41,7 +48,7 @@ const Friends = () => {
         return (
             <View>
                 <Text style={styles.text}>
-                {item.id}{item.user_givenname}{' '}{item.user_familyname}
+                {item.id}{item.user_givenname}{' '}{item.user_familyname}{' '}<CustomButtonSmall text="View Profile" onPress={() => onViewProfilePressed(item.user_id)}/>
                 </Text>
             </View>
         );
@@ -54,7 +61,6 @@ const Friends = () => {
         />
     );
   }
-
 
     useEffect(() => {
       checkLoggedIn();

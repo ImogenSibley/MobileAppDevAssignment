@@ -10,6 +10,7 @@ const Search = () => {
   const [filterUserList, setFilterUserList] = useState('');
   const [search, setSearch] = useState('');
   const [requestedUserID, setRequestedUserID] = useState('');
+  const [message, setMessage] = useState('');
 
   const getAllUsers = async () => {
     const value = await AsyncStorage.getItem('@session_token');
@@ -28,7 +29,7 @@ const Search = () => {
             }
         })
         .then((responseJson) => {
-           console.log(responseJson);
+           //console.log(responseJson);
            setUserList(responseJson);
            setFilterUserList(responseJson);
         })
@@ -70,33 +71,35 @@ const Search = () => {
             }
         })
         .then((response) => {
-            if(response.status === 200){
+            if(response.status === 201 || response.status === 200){
                 return response.json()
             }else if(response.status === 401){
               navigation.navigate("Login");
             }else if(response.status === 403){
-              throw 'User is already added as a friend';
-            }
-            else{
-                throw 'Something went wrong';
+              setMessage("User may already be added.");
+              throw 'Forbidden - User may already be added';
+            }else if(response.status === 404){
+              throw 'Not found';
+            }else if(response.status === 500){
+              throw 'Server Error';
+            }else{
+              console.log(response.status)
+              throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            console.log("Friend Request Sent");
-            console.log(responseJson);
-        })
-        .catch((error) => {
-            console.log(error);
-        })
+            setMessage("Friend Request Sent!");
+            console.log(response.status)
+            console.log("Friend Request Sent")
+        }).catch((err) => {
+			console.log(err);
+		})
     }
 
   const ItemView = ({item}) => {
     return (
-    <View>
         <Text style={styles.results}>
-        {item.id}{item.user_givenname}{' '}{item.user_familyname}
+        {item.id}{item.user_givenname}{' '}{item.user_familyname}{' '}<CustomAddButton onPress={() => onAddFriend(item.user_id)} />
         </Text>
-        <CustomAddButton onPress={onAddFriend(item.user_id)} />
-    </View>
     );
   }
 
@@ -122,6 +125,7 @@ const Search = () => {
                     <View style={styles.titleContainer}>
                         <Text style={styles.sectionTitle}>Search</Text>
 			        </View>
+                    <Text>{message}</Text>
                     {/*Text Input for Searching for friends*/}
 			        <TextInput style={styles.inputContainer} placeholder="Find Friends..." onChangeText={(text) => searchFilter(text)} value={search}/>
                     <View style={styles.results}>
