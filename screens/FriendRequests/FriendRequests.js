@@ -5,12 +5,13 @@ import CustomButtonSmall from '../../components/customButtonSmall';
 
 const FriendRequests = ({ navigate }) => {
 	const [friendRequests, setFriendRequests] = useState('');
+    const [errorMess, setErrorMess] = useState('0 new requests.');
 
 	const getFriendRequests = async () => {
         const value = await AsyncStorage.getItem('@session_token');
         const userID = await AsyncStorage.getItem('@user_id')
         return fetch("http://localhost:3333/api/1.0.0/friendrequests", {
-            'headers': {
+            headers: {
             'X-Authorization':  value
             }
         })
@@ -25,6 +26,9 @@ const FriendRequests = ({ navigate }) => {
         }).then((responseJson) => {
             console.log(responseJson);
             setFriendRequests(responseJson);
+            if(responseJson.length !== 0) {
+                setErrorMess('');
+            }
         })
         .catch((error) => {
             console.log(error);
@@ -35,21 +39,20 @@ const FriendRequests = ({ navigate }) => {
         const value = await AsyncStorage.getItem('@session_token');
         return fetch("http://localhost:3333/api/1.0.0/friendrequests/"+requestedUserID, {
             method: "POST",
-            'headers': {
+            headers: {
             'X-Authorization':  value
             }
-        })
-        .then((response) => {
+        }).then((response) => {
             //console.log(response.status);
             if(response.status === 200 || response.status === 201){
                 return response.json()
             }else if(response.status === 401){
-              this.props.navigation.navigate("Login");
+              navigation.navigate("Login");
             }else{
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            console.log(responseJson);
+            setErrorMess('Request Accepted.');
             console.log("Request Accepted.");
         })
         .catch((error) => {
@@ -61,11 +64,10 @@ const FriendRequests = ({ navigate }) => {
         const value = await AsyncStorage.getItem('@session_token');
         return fetch("http://localhost:3333/api/1.0.0/friendrequests/"+requestedUserID, {
             method: "DELETE",
-            'headers': {
+            headers: {
             'X-Authorization':  value
             }
-        })
-        .then((response) => {
+        }).then((response) => {
             console.log(response.status);
             if(response.status === 200 || response.status === 201){
                 return response.json()
@@ -75,8 +77,9 @@ const FriendRequests = ({ navigate }) => {
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            console.log(responseJson);
+            setErrorMess('Request Rejected.');
             console.log("Request Rejected.");
+            
         })
         .catch((error) => {
             console.warn(error);
@@ -126,20 +129,21 @@ const FriendRequests = ({ navigate }) => {
 		<SafeAreaView style={styles.root}>
         <ScrollView>
             <View style={styles.header}>
-                <View style={styles.container}>
-                    {/*Friends Requests Page*/}
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.sectionTitle}>Friend Requests</Text>
-			        </View>
-                    <View style={styles.text}>
-                        <FlatList
-                            data={friendRequests}
-                            keyExtractor={(item, index) => index.toString()}
-                            ItemSeperatorComponent={ItemSeperatorView}
-                            renderItem={ItemView}
-                        />
-                    </View>
-                </View>
+                {/*Friends Requests Page*/}
+                <View style={styles.titleContainer}>
+                    <Text style={styles.sectionTitle}>Friend Requests</Text>
+    	        </View>
+            </View>
+            <View style={styles.container}>
+                <Text style={styles.text}>{errorMess}</Text>
+                <View style={styles.text}>
+                    <FlatList
+                        data={friendRequests}
+                        keyExtractor={(item, index) => index.toString()}
+                        ItemSeperatorComponent={ItemSeperatorView}
+                        renderItem={ItemView}
+                    />
+                </View>  
             </View>
         </ScrollView>
 		</SafeAreaView>
@@ -164,6 +168,7 @@ const styles = StyleSheet.create({
 	titleContainer: {
 		paddingTop: 80,
 		paddingHorizontal: 40,
+        alignItems: 'center',
 	},
 	sectionTitle: {
 		fontSize:28,

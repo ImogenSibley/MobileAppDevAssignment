@@ -2,6 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Text, View, SafeAreaView, StyleSheet, Image, FlatList } from 'react-native';
 import CustomButton from '../../components/customButton'; 
+import CustomButtonSmall from '../../components/customButtonSmall';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -11,6 +12,7 @@ const Profile = ({ navigation }) => {
 	const [lastName, setLastName] = useState('');
     const [numOfFriends, setNumOfFriends] = useState('');
     const [posts, setPosts] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
 	const getUserData = async () => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -62,8 +64,33 @@ const Profile = ({ navigation }) => {
         }).then((responseJson) => {
             //console.log(responseJson);
             setPosts(responseJson);
+            setIsLoading(false);
         })
         .catch((error) => {
+            console.log(error);
+        })
+    }
+
+    const deletePost = async (postID) => {
+        const value = await AsyncStorage.getItem("@session_token");
+        const userID = await AsyncStorage.getItem("@user_id");
+        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/post/" + postID, {
+            method: 'DELETE',
+            headers: {
+                "X-Authorization": value,
+            }
+        }).then((response) => {
+            if (response.status === 200 || response.status === 201) {
+                return response.json()
+            } else if (response.status === 401) {
+                navigation.navigate("Login");
+            } else {
+                console.log(response.status);
+                throw 'Something went wrong';
+            }
+        }).then((responseJson) => {
+            console.log(response.status);
+        }).catch((error) => {
             console.log(error);
         })
     }
@@ -73,6 +100,7 @@ const Profile = ({ navigation }) => {
             <View style={styles.postContainer}>
                 <Text style={styles.post}>
                     {item.id}{item.author.first_name}{' '}{item.author.last_name}{' - '}{item.text}{' '}{item.timestamp}{' - Likes: '}{item.numLikes}
+                    {' '}<CustomButtonSmall text="Edit"/>{' '}<CustomButtonSmall text="Delete" onPress={() => deletePost(item.post_id)}/>
                 </Text>
             </View>
         );
@@ -103,12 +131,20 @@ const Profile = ({ navigation }) => {
         getAllPosts();
     }, [])
 
+
+    if (isLoading) {
+        return (
+            <SafeAreaView style={styles.root}>
+                <View><Text style={styles.name}>Loading...</Text></View>
+            </SafeAreaView>
+        );
+    } else {
 	return (
 		<SafeAreaView style={styles.root}>
             <View style={styles.header}></View>
             <Image style={styles.avatar} source={{uri: 'https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg'}}/>
                 <View style={styles.body}>
-                    <View style={styles.bodyContent}>
+                    <View style={styles.container}>
                         <Text style={styles.name}>{firstName} {lastName}</Text>
                         <Text style={styles.info}>{email}</Text>
                         <Text style={styles.info}>Following: {numOfFriends}</Text>
@@ -123,6 +159,7 @@ const Profile = ({ navigation }) => {
                 </View>
 		</SafeAreaView>
 	);
+    }
 }
 
 const styles = StyleSheet.create({
@@ -148,15 +185,16 @@ const styles = StyleSheet.create({
     body:{
         marginTop:40,
     },
-    bodyContent: {
+    container: {
         flex: 1,
         alignItems: 'center',
-        padding:30,
+        padding: 30,
     },
     name:{
         fontSize:28,
         color: "#696969",
-        fontWeight: "600"
+        fontWeight: "600",
+        alignItems: 'center',
     },
     info:{
         fontSize:16,

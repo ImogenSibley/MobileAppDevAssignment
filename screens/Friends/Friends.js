@@ -5,6 +5,7 @@ import CustomButtonSmall from '../../components/customButtonSmall';
 
 const Friends = ({ navigation }) => {
     const [friendList, setFriendList] = useState('');
+    const [errorMess, setErrorMess] = useState('0 friends.');
 
 	const getFriendList = async () => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -23,6 +24,9 @@ const Friends = ({ navigation }) => {
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
+            if(responseJson.length !== 0) {
+                setErrorMess('');
+            }
             console.log(responseJson);
             setFriendList(responseJson);
         })
@@ -70,21 +74,21 @@ const Friends = ({ navigation }) => {
 		<SafeAreaView style={styles.root}>
         <ScrollView>
             <View style={styles.header}>
-                <View style={styles.container}>
-                    {/*Friends List Page*/}
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.sectionTitle}>My Friends</Text>
-			        </View>
-                    {/*Text Input for Searching for friends within friends list?*/}
-                    <View style={styles.text}>
-                        <FlatList
-                            data={friendList}
-                            keyExtractor={(item, index) => index.toString()}
-                            ItemSeperatorComponent={ItemSeperatorView}
-                            renderItem={ItemView}
-                        />
-                    </View>
-                </View>
+                {/*Friends Requests Page*/}
+                <View style={styles.titleContainer}>
+                    <Text style={styles.sectionTitle}>My Friends</Text>
+    	        </View>
+            </View>
+            <View style={styles.container}>
+                <Text style={styles.text}>{errorMess}</Text>
+                <View style={styles.text}>
+                    <FlatList
+                        data={friendList}
+                        keyExtractor={(item, index) => index.toString()}
+                        ItemSeperatorComponent={ItemSeperatorView}
+                        renderItem={ItemView}
+                    />
+                </View>  
             </View>
         </ScrollView>
 		</SafeAreaView>
@@ -109,6 +113,7 @@ const styles = StyleSheet.create({
 	titleContainer: {
 		paddingTop: 80,
 		paddingHorizontal: 40,
+        alignItems: 'center',
 	},
 	sectionTitle: {
 		fontSize:28,
