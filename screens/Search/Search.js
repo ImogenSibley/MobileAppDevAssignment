@@ -1,7 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet, TextInput, Image, SafeAreaView, FlatList, ScrollView} from 'react-native';
-import CustomInput from '../../components/customInput';
-import CustomButton from '../../components/customButton';
 import CustomAddButton from '../../components/customAddButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -14,7 +12,8 @@ const Search = () => {
 
   const getAllUsers = async () => {
     const value = await AsyncStorage.getItem('@session_token');
-    return fetch("http://localhost:3333/api/1.0.0/search", {
+      return fetch("http://localhost:3333/api/1.0.0/search", {
+      //return fetch("http://localhost:3333/api/1.0.0/search?q=" + user_givenname + "%20"user_familyname + "&search_in=all&limit=20&offset=0", {
           'headers': {
             'X-Authorization':  value
           }

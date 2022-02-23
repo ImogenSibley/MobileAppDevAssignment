@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { Text, View, SafeAreaView, StyleSheet, ActivityIndicator, FlatList, Button, Alert, AsyncStorage } from 'react-native';
 import CustomInput from '../../components/customInput';

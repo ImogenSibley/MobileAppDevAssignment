@@ -18,7 +18,7 @@ const Friends = ({ navigation }) => {
             if(response.status === 200){
                 return response.json()
             }else if(response.status === 401){
-              this.props.navigation.navigate("Login");
+              navigation.navigate("Login");
             }else{
                 throw 'Something went wrong';
             }
@@ -32,7 +32,6 @@ const Friends = ({ navigation }) => {
     }
 
     const onViewProfilePressed = (requestedUserID) => {
-		console.warn("Viewing Profile with User ID " +requestedUserID);
         //store this ID to fetch details from user ID on their profile
 		navigation.navigate("Friend Profile", {requestedUserID: requestedUserID});
 	}
@@ -40,7 +39,7 @@ const Friends = ({ navigation }) => {
     const checkLoggedIn = async () => {
         const value = await AsyncStorage.getItem('@session_token');
         if (value == null) {
-            this.props.navigation.navigate('Login');
+            navigation.navigate('Login');
         }
     };
 

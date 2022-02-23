@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, Image, SafeAreaView, FlatList, Scrol
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomButtonSmall from '../../components/customButtonSmall';
 
-const FriendRequests = () => {
+const FriendRequests = ({ navigate }) => {
 	const [friendRequests, setFriendRequests] = useState('');
 
 	const getFriendRequests = async () => {
@@ -70,7 +70,7 @@ const FriendRequests = () => {
             if(response.status === 200 || response.status === 201){
                 return response.json()
             }else if(response.status === 401){
-              this.props.navigation.navigate("Login");
+              navigation.navigate("Login");
             }else{
                 throw 'Something went wrong';
             }
@@ -86,7 +86,7 @@ const FriendRequests = () => {
     const checkLoggedIn = async () => {
         const value = await AsyncStorage.getItem('@session_token');
         if (value == null) {
-            this.props.navigation.navigate('Login');
+            navigation.navigate('Login');
         }
     };
 
