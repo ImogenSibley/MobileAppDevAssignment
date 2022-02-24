@@ -45,6 +45,7 @@ const FriendRequests = ({ navigate }) => {
         }).then((response) => {
             //console.log(response.status);
             if(response.status === 200 || response.status === 201){
+                setErrorMess('Request Accepted.');
                 return response.json()
             }else if(response.status === 401){
               navigation.navigate("Login");
@@ -52,7 +53,6 @@ const FriendRequests = ({ navigate }) => {
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            setErrorMess('Request Accepted.');
             console.log("Request Accepted.");
         })
         .catch((error) => {
@@ -70,6 +70,7 @@ const FriendRequests = ({ navigate }) => {
         }).then((response) => {
             console.log(response.status);
             if(response.status === 200 || response.status === 201){
+                setErrorMess('Request Rejected.');
                 return response.json()
             }else if(response.status === 401){
               navigation.navigate("Login");
@@ -77,7 +78,6 @@ const FriendRequests = ({ navigate }) => {
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            setErrorMess('Request Rejected.');
             console.log("Request Rejected.");
             
         })
@@ -126,7 +126,7 @@ const FriendRequests = ({ navigate }) => {
     }, []);
 
 	return (
-		<SafeAreaView style={styles.root}>
+	<SafeAreaView style={styles.root}>
         <ScrollView>
             <View style={styles.header}>
                 {/*Friends Requests Page*/}
@@ -146,7 +146,7 @@ const FriendRequests = ({ navigate }) => {
                 </View>  
             </View>
         </ScrollView>
-		</SafeAreaView>
+	</SafeAreaView>
 	);
 }
 

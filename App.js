@@ -17,6 +17,7 @@ import Search from './screens/Search';
 import AccountSettings from './screens/AccountSettings';
 import Logout from './screens/Logout';
 import OtherProfile from './screens/OtherProfile';
+import EditPost from './screens/EditPost';
 
 
 //----------------------------------------------
@@ -40,6 +41,7 @@ function App(){
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Friend Profile" component={OtherProfile} />
         <Stack.Screen name="Friends" component={Friends} />
+        <Stack.Screen name="Edit Post" component={EditPost} />
       </Stack.Navigator>
     </NavigationContainer>
   );

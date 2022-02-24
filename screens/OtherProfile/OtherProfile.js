@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Text, View, SafeAreaView, StyleSheet, Image, FlatList } from 'react-native';
+import { Text, View, SafeAreaView, StyleSheet, Image, FlatList, ScrollView } from 'react-native';
 import CustomButton from '../../components/customButton'; 
 import CustomButtonSmall from '../../components/customButtonSmall';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -72,8 +72,8 @@ const OtherProfile = ({route, navigation}) => {
 
     const addLike = async (postID) => {
         const value = await AsyncStorage.getItem("@session_token");
-        const userID = await AsyncStorage.getItem("@user_id")
-        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/post/" +postID, {
+        let requestedUserID = route.params.requestedUserID;
+        return fetch("http://localhost:3333/api/1.0.0/user/" + requestedUserID + "/post/" + postID + "/like", {
             method: 'POST',
             headers: {
                 "X-Authorization": value,
@@ -85,12 +85,14 @@ const OtherProfile = ({route, navigation}) => {
                 navigation.navigate("Login");
             } else if (response.status === 404){
                 throw 'Post or User Not Found.';
+            } else if (response.status === 403){
+                throw 'You have already liked this post.';
             } else {
                 console.log(response.status);
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            console.log("Post Liked Successfully! - "+responseJson);
+            console.log("Post Liked Successfully! - "+responseJson.status);
         }).catch((error) => {
             console.log(error);
         })
@@ -98,8 +100,8 @@ const OtherProfile = ({route, navigation}) => {
 
       const removeLike = async (postID) => {
         const value = await AsyncStorage.getItem("@session_token");
-        const userID = await AsyncStorage.getItem("@user_id")
-        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/post/" +postID, {
+        let requestedUserID = route.params.requestedUserID;
+        return fetch("http://localhost:3333/api/1.0.0/user/" + requestedUserID + "/post/" + postID + "/like", {
             method: 'DELETE',
             headers: {
                 "X-Authorization": value,
@@ -111,12 +113,14 @@ const OtherProfile = ({route, navigation}) => {
                 navigation.navigate("Login");
             } else if (response.status === 404){
                 throw 'Post or User Not Found.';
+            } else if (response.status === 403){
+                throw 'You have not liked this post.';
             } else {
                 console.log(response.status);
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            console.log("Removed Like Successfully! - "+responseJson);
+            console.log("Removed Like Successfully! - "+responseJson.status);
         }).catch((error) => {
             console.log(error);
         })
@@ -162,7 +166,8 @@ const OtherProfile = ({route, navigation}) => {
         );
     } else {
 	return (
-		<SafeAreaView style={styles.root}>
+	<SafeAreaView style={styles.root}>
+        <ScrollView>
             <View style={styles.header}></View>
             <Image style={styles.avatar} source={{uri: 'https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg'}}/>
                 <View style={styles.body}>
@@ -180,7 +185,8 @@ const OtherProfile = ({route, navigation}) => {
                         />
                     </View>
                 </View>
-		</SafeAreaView>
+        </ScrollView>
+	</SafeAreaView>
 	);
     }
 }

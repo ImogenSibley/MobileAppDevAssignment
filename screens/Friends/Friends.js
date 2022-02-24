@@ -5,6 +5,8 @@ import CustomButtonSmall from '../../components/customButtonSmall';
 
 const Friends = ({ navigation }) => {
     const [friendList, setFriendList] = useState('');
+    const [search, setSearch] = useState('');
+    const [filterFriendList, setFilterFriendList] = useState('');
     const [errorMess, setErrorMess] = useState('0 friends.');
 
 	const getFriendList = async () => {
@@ -29,10 +31,28 @@ const Friends = ({ navigation }) => {
             }
             console.log(responseJson);
             setFriendList(responseJson);
+            setFilterFriendList(responseJson);
         })
         .catch((error) => {
             console.log(error);
         })
+    }
+
+    const searchFilter = (text) => {
+        if (text) {
+            const newData = friendList.filter((item) => {
+                const itemData = item.user_givenname 
+                    ? item.user_givenname.toUpperCase()
+                    : ''.toUpperCase()
+                const textData = text.toUpperCase();
+                return itemData.indexOf(textData) > -1;
+            });
+            setFilterFriendList(newData);
+            setSearch(text);
+        } else {
+            setFilterFriendList(friendList);
+            setSearch(text);
+        }
     }
 
     const onViewProfilePressed = (requestedUserID) => {
@@ -74,21 +94,23 @@ const Friends = ({ navigation }) => {
 		<SafeAreaView style={styles.root}>
         <ScrollView>
             <View style={styles.header}>
-                {/*Friends Requests Page*/}
-                <View style={styles.titleContainer}>
-                    <Text style={styles.sectionTitle}>My Friends</Text>
-    	        </View>
-            </View>
-            <View style={styles.container}>
-                <Text style={styles.text}>{errorMess}</Text>
-                <View style={styles.text}>
-                    <FlatList
-                        data={friendList}
-                        keyExtractor={(item, index) => index.toString()}
-                        ItemSeperatorComponent={ItemSeperatorView}
-                        renderItem={ItemView}
-                    />
-                </View>  
+                <View style={styles.container}>
+                    {/*Friends Page*/}
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.sectionTitle}>My Friends</Text>
+			        </View>
+                    <Text style={styles.text}>{errorMess}</Text>
+                    {/*Text Input for Searching for friends*/}
+			        <TextInput style={styles.inputContainer} placeholder="Find Friends..." onChangeText={(text) => searchFilter(text)} value={search}/>
+                    <View style={styles.results}>
+                        <FlatList
+                            data={filterFriendList}
+                            keyExtractor={(item, index) => index.toString()}
+                            ItemSeperatorComponent={ItemSeperatorView}
+                            renderItem={ItemView}
+                        />
+                    </View>
+                </View>
             </View>
         </ScrollView>
 		</SafeAreaView>
@@ -103,23 +125,29 @@ const styles = StyleSheet.create({
 	header:{
         backgroundColor: "#45ded0",
         height:200,
+        padding: 10,
     },
 	container: {
 		flex: 1,
 		justifyContent: 'flex-start',
 		alignItems: 'center',
-		padding: 30
-	},
+		padding: 10,
+    },
 	titleContainer: {
 		paddingTop: 80,
 		paddingHorizontal: 40,
-        alignItems: 'center',
 	},
 	sectionTitle: {
 		fontSize:28,
         color: "#696969",
         fontWeight: "600"
 	},
+    results: {
+        fontSize:16,
+        color: "#696969",
+        marginTop:10,
+        fontWeight: 'bold'
+    },
     text: {
         fontSize:16,
         color: "#696969",

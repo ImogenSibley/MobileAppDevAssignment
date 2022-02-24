@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Text, View, SafeAreaView, StyleSheet, Image, FlatList } from 'react-native';
+import { Text, View, SafeAreaView, StyleSheet, Image, FlatList, ScrollView } from 'react-native';
 import CustomButton from '../../components/customButton'; 
 import CustomButtonSmall from '../../components/customButtonSmall';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -71,36 +71,11 @@ const Profile = ({ navigation }) => {
         })
     }
 
-    const deletePost = async (postID) => {
-        const value = await AsyncStorage.getItem("@session_token");
-        const userID = await AsyncStorage.getItem("@user_id");
-        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/post/" + postID, {
-            method: 'DELETE',
-            headers: {
-                "X-Authorization": value,
-            }
-        }).then((response) => {
-            if (response.status === 200 || response.status === 201) {
-                return response.json()
-            } else if (response.status === 401) {
-                navigation.navigate("Login");
-            } else {
-                console.log(response.status);
-                throw 'Something went wrong';
-            }
-        }).then((responseJson) => {
-            console.log(response.status);
-        }).catch((error) => {
-            console.log(error);
-        })
-    }
-
     const ItemView = ({item}) => {
         return (
             <View style={styles.postContainer}>
                 <Text style={styles.post}>
                     {item.id}{item.author.first_name}{' '}{item.author.last_name}{' - '}{item.text}{' '}{item.timestamp}{' - Likes: '}{item.numLikes}
-                    {' '}<CustomButtonSmall text="Edit"/>{' '}<CustomButtonSmall text="Delete" onPress={() => deletePost(item.post_id)}/>
                 </Text>
             </View>
         );
@@ -140,7 +115,8 @@ const Profile = ({ navigation }) => {
         );
     } else {
 	return (
-		<SafeAreaView style={styles.root}>
+	<SafeAreaView style={styles.root}>
+        <ScrollView>
             <View style={styles.header}></View>
             <Image style={styles.avatar} source={{uri: 'https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg'}}/>
                 <View style={styles.body}>
@@ -157,7 +133,8 @@ const Profile = ({ navigation }) => {
                         />
                     </View>
                 </View>
-		</SafeAreaView>
+        </ScrollView>
+	</SafeAreaView>
 	);
     }
 }

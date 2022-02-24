@@ -9,7 +9,7 @@ import CustomButton from '../../components/customButton';
 
 const Login = ({ navigation }) => {
 	
-	const [email, setEmail] = useState('imogen@gmail.com');
+	const [email, setEmail] = useState('Coffee@gmail.com');
 	const [password, setPassword] = useState('password');
 	const [errorMess, setErrorMess] = useState('');
 
@@ -51,23 +51,29 @@ const Login = ({ navigation }) => {
 	return (
 		<SafeAreaView style={styles.root}>
 			<View style={styles.container}>
-			{/*Spacebook Logo*/}
-			{/*Login Title*/}
-			<View style={styles.titleContainer}>
-				<Text style={styles.sectionTitle}>Login</Text>
+				{/*Spacebook Logo*/}
+				{/*Login Title*/}
+				<View style={styles.titleContainer}>
+					<Text style={styles.sectionTitle}>Login</Text>
+				</View>
 			</View>
-
-			<Text>{errorMess}</Text>
-
-			{/*Text Input for logging in*/}
-			<CustomInput placeholder="Email" value={email} setValue={setEmail} />
-			<CustomInput secureTextEntry={true} placeholder="Password" value={password} setValue={setPassword} />
-
-			{/*Button to Click Login*/}
-			<CustomButton text="Login" onPress={onLoginPressed} />
-
-			{/*Button to Sign Up*/}
-			<CustomButton text="Create an Account" onPress={onSignUpPressed} />
+			<View style={styles.container}>
+				<Text>{errorMess}</Text>
+			</View>
+			<View style={styles.container}>
+				{/*Text Input for logging in*/}
+				<CustomInput placeholder="Email" value={email} setValue={setEmail} />
+			</View>
+			<View style={styles.container}>
+				<CustomInput secureTextEntry={true} placeholder="Password" value={password} setValue={setPassword} />
+			</View>
+			<View style={styles.container}>
+				{/*Button to Click Login*/}
+				<CustomButton text="Login" onPress={onLoginPressed} />
+			</View>
+			<View style={styles.container}>
+				{/*Button to Sign Up*/}
+				<CustomButton text="Create an Account" onPress={onSignUpPressed} />
 			</View>
 		</SafeAreaView>
 	);
@@ -77,15 +83,14 @@ const styles = StyleSheet.create({
 	root: {
 		flex: 1,
 		backgroundColor: '#ffcfe6',
+		justifyContent: 'center',
 	},
 	container: {
-		flex: 1,
-		justifyContent: 'space-evenly',
-		alignItems: 'center',
-		padding: 10
+        alignItems: 'center',
+        paddingTop: 10,
 	},
 	titleContainer: {
-		paddingTop: 80,
+		paddingTop: 40,
 		paddingHorizontal: 40,
 	},
 	sectionTitle: {

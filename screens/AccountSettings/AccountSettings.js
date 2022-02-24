@@ -1,22 +1,243 @@
 import React from 'react';
-import { Text, View, SafeAreaView, StyleSheet } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, SafeAreaView, ScrollView} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomInput from '../../components/customInput';
+import CustomButton from '../../components/customButton';
 
 const AccountSettings = () => {
-	return (
-		<SafeAreaView style={styles.root}>
-			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-				<Text>Account Settings</Text>
-			</View>
-		</SafeAreaView>
-	);
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+    const [passwordCheck, setPasswordCheck] = useState('');
+	const [firstName, setFirstName] = useState('');
+	const [lastName, setLastName] = useState('');
+	const [errorMess, setErrorMess] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+
+    const updateAccountDetails = async (firstInput, lastInput, emailInput, passInput) => {
+        const value = await AsyncStorage.getItem("@session_token");
+        const userID = await AsyncStorage.getItem("@user_id")
+
+        // Check email is email
+		validateEmail(email);
+		console.log(validateEmail(email));
+		if (validateEmail(email) == true && email != '') {
+            return fetch("http://localhost:3333/api/1.0.0/user/" + userID, {
+                method: 'PATCH',
+                headers: {
+                    "X-Authorization": value,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "email": emailInput,
+                })
+            }).then((response) => {
+                if (response.status === 200 || response.status === 201) {
+                    setErrorMess('Email Updated.');
+                    return response.json()
+                } else if (response.status === 401) {
+                    navigation.navigate("Login");
+                } else {
+                    console.log(response.status);
+                    throw 'Something went wrong';
+                }
+            }).then((responseJson) => {
+                console.log('Email Updated.');
+            }).catch((error) => {
+                console.log(error);
+            })
+        }
+        // Check password is greater than 6 chars and matches confirm pass
+		if (password.length >= 6 && password.match(passwordCheck) && password != '' && passwordCheck != '') {
+            return fetch("http://localhost:3333/api/1.0.0/user/" + userID, {
+                method: 'PATCH',
+                headers: {
+                    "X-Authorization": value,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "password": passInput,
+                })
+            }).then((response) => {
+                if (response.status === 200 || response.status === 201) {
+                    setErrorMess('Password Updated.');
+                    return response.json()
+                } else if (response.status === 401) {
+                    navigation.navigate("Login");
+                } else {
+                    console.log(response.status);
+                    throw 'Something went wrong';
+                }
+            }).then((responseJson) => {
+                console.log('Password Updated.');
+            }).catch((error) => {
+                console.log(error);
+            })
+        }
+
+        if (firstName != '') {
+            return fetch("http://localhost:3333/api/1.0.0/user/" + userID, {
+                method: 'PATCH',
+                headers: {
+                    "X-Authorization": value,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "first_name": firstInput,
+                })
+            }).then((response) => {
+                if (response.status === 200 || response.status === 201) {
+                    setErrorMess('First Name Updated.');
+                    return response.json()
+                } else if (response.status === 401) {
+                    navigation.navigate("Login");
+                } else {
+                    console.log(response.status);
+                    throw 'Something went wrong';
+                }
+            }).then((responseJson) => {
+                console.log('First Name Updated.');
+            }).catch((error) => {
+                console.log(error);
+            })
+        }
+
+        if (lastName != '') {
+            return fetch("http://localhost:3333/api/1.0.0/user/" + userID, {
+                method: 'PATCH',
+                headers: {
+                    "X-Authorization": value,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "last_name": lastInput,
+                })
+            }).then((response) => {
+                if (response.status === 200 || response.status === 201) {
+                    setErrorMess('Last Name Updated.');
+                    return response.json()
+                } else if (response.status === 401) {
+                    navigation.navigate("Login");
+                } else {
+                    console.log(response.status);
+                    throw 'Something went wrong';
+                }
+            }).then((responseJson) => {
+                console.log('Last Name Updated.');
+            }).catch((error) => {
+                console.log(error);
+            })
+        }
+    }
+
+	const validateEmail = (email) => {
+		const expression = /(?!.*\.{2})^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([\t]*\r\n)?[\t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([\t]*\r\n)?[\t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+		return expression.test(String(email).toLowerCase())
+	}
+
+    const checkLoggedIn = async () => {
+        const value = await AsyncStorage.getItem('@session_token');
+        if (value == null) {
+            navigation.navigate('Login');
+        }
+    };
+
+     useEffect(() => {
+        checkLoggedIn();
+        setIsLoading(false);
+    }, [])
+
+	if (isLoading) {
+       return (
+            <SafeAreaView style={styles.root}>
+                <View><Text style={styles.sectionTitle}>Loading...</Text></View>
+            </SafeAreaView>
+        );
+    } else {
+        return (
+            <SafeAreaView style={styles.root}>
+            <ScrollView>
+                <View style={styles.header}>
+                    {/*Spacebook Logo*/}
+                    {/*Update Account Details Page*/}
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.sectionTitle}>Update Account Details</Text>
+                    </View>
+                </View>
+                <View style={styles.container}>
+                     <Text style={styles.post}>{errorMess}</Text>
+                </View>
+                <View style={styles.container}>
+                     {/*Text Input for Updating Details*/}
+                     <CustomInput placeholder="First Name" value={firstName} setValue={setFirstName} />
+                </View>
+                <View style={styles.container}>
+                     <CustomInput placeholder="Last Name" value={lastName} setValue={setLastName} />
+                </View>
+                <View style={styles.container}>
+                     <CustomInput placeholder="Email" value={email} setValue={setEmail} />
+                </View>
+                <View style={styles.container}>
+                     <CustomInput secureTextEntry={true} placeholder="Password" value={password} setValue={setPassword} />
+                </View>
+                <View style={styles.container}>
+					 <CustomInput secureTextEntry={true} placeholder="Confirm Password" value={passwordCheck} setValue={setPasswordCheck} />
+                </View>
+                <View style={styles.container}>
+                     {/*Button to Save Changes or Delete*/}
+                     <CustomButton text="Save Changes" onPress={() => updateAccountDetails(firstName, lastName, email, password, passwordCheck)} />
+                </View>
+            </ScrollView>
+            </SafeAreaView>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
 	root: {
 		flex: 1,
 		backgroundColor: '#ffcfe6',
-	}
-
+	},
+    header:{
+        backgroundColor: "#45ded0",
+        height:200,
+    },
+    body:{
+        marginTop:40,
+    },
+	container: {
+        alignItems: 'center',
+        paddingTop: 10,
+	},
+	titleContainer: {
+		paddingTop: 80,
+		paddingHorizontal: 40,
+        padding: 30,
+        alignSelf: 'center'
+	},
+	sectionTitle: {
+        fontSize:28,
+        color: "#696969",
+        fontWeight: "600",
+        alignItems: 'center',
+	},
+    postContainer: {
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+        alignContent: 'center',
+    	backgroundColor: '#ffffff',
+        width: '90%',
+		borderColor: '#45ded0',
+		borderWidth: 1,	
+    },
+    post: {
+        fontSize:16,
+        color: "#696969",
+        fontWeight: 'bold',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+    }
 });
 
 export default AccountSettings;

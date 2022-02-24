@@ -44,7 +44,8 @@ const Signup = ({ navigation }) => {
 							"password": password
 						})
 					}).then((response) => {
-						if (response.status === 201) {
+						if (response.status === 201 || response.status === 200) {
+							setErrorMess('Account Created.');
 							return response.json();
 						} else if (response.status === 400) {
 							setErrorMess("This Email is already in use.");
@@ -85,23 +86,33 @@ const Signup = ({ navigation }) => {
 					<View style={styles.titleContainer}>
 						<Text style={styles.sectionTitle}>Create Account</Text>
 					</View>
-
+				</View>
+				<View style={styles.container}>
 					<Text>{errorMess}</Text>
-
+				</View>
+				<View style={styles.container}>
 					{/*Text Input for Creating an Account*/}
 					<CustomInput placeholder="First Name" value={firstName} setValue={setFirstName} />
+				</View>
+				<View style={styles.container}>
 					<CustomInput placeholder="Last Name" value={lastName} setValue={setLastName} />
+				</View>
+				<View style={styles.container}>
 					<CustomInput placeholder="Email Address" value={email} setValue={setEmail} />
+				</View>
+				<View style={styles.container}>
 					<CustomInput secureTextEntry={true} placeholder="Password" value={password} setValue={setPassword} />
+				</View>
+				<View style={styles.container}>
 					<CustomInput secureTextEntry={true} placeholder="Confirm Password" value={passwordCheck} setValue={setPasswordCheck} />
-
-
+				</View>
+				<View style={styles.container}>
 					{/*Button to Sign Up*/}
 					<CustomButton text="Create Account" onPress={onSignUpPressed} />
-
+				</View>
+				<View style={styles.container}>
 					{/*Button to Return*/}
 					<CustomButton text="Back to Login" onPress={onReturnPressed} />
-
 				</View>
 			</SafeAreaView>
 		);
@@ -112,19 +123,14 @@ const styles = StyleSheet.create({
 	root: {
 		flex: 1,
 		backgroundColor: '#ffcfe6',
+		justifyContent: 'center',
 	},
-	//logo: {
-	//	width: 120,
-	//	height: 120,
-	//},
 	container: {
-		flex: 1,
-		justifyContent: 'space-evenly',
-		alignItems: 'center',
-		padding: 10,
+        alignItems: 'center',
+        paddingTop: 10,
 	},
 	titleContainer: {
-		paddingTop: 80,
+		paddingTop: 40,
 		paddingHorizontal: 40,
 	},
 	sectionTitle: {

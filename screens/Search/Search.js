@@ -8,7 +8,7 @@ const Search = () => {
   const [filterUserList, setFilterUserList] = useState('');
   const [search, setSearch] = useState('');
   const [requestedUserID, setRequestedUserID] = useState('');
-  const [message, setMessage] = useState('');
+  const [errorMess, setErrorMess] = useState('');
 
   const getAllUsers = async () => {
     const value = await AsyncStorage.getItem('@session_token');
@@ -71,11 +71,12 @@ const Search = () => {
         })
         .then((response) => {
             if(response.status === 201 || response.status === 200){
+                setErrorMess("Friend Request Sent!");
                 return response.json()
             }else if(response.status === 401){
               navigation.navigate("Login");
             }else if(response.status === 403){
-              setMessage("User may already be added.");
+              setErrorMess("User may already be added.");
               throw 'Forbidden - User may already be added';
             }else if(response.status === 404){
               throw 'Not found';
@@ -86,7 +87,6 @@ const Search = () => {
               throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            setMessage("Friend Request Sent!");
             console.log(response.status)
             console.log("Friend Request Sent")
         }).catch((err) => {
@@ -124,7 +124,7 @@ const Search = () => {
                     <View style={styles.titleContainer}>
                         <Text style={styles.sectionTitle}>Search</Text>
 			        </View>
-                    <Text>{message}</Text>
+                    <Text style={styles.text}>{errorMess}</Text>
                     {/*Text Input for Searching for friends*/}
 			        <TextInput style={styles.inputContainer} placeholder="Find Friends..." onChangeText={(text) => searchFilter(text)} value={search}/>
                     <View style={styles.results}>
@@ -150,13 +150,14 @@ const styles = StyleSheet.create({
 	header:{
         backgroundColor: "#45ded0",
         height:200,
+        padding: 10,
     },
 	container: {
 		flex: 1,
 		justifyContent: 'flex-start',
 		alignItems: 'center',
-		padding: 30
-	},
+		padding: 10,
+    },
 	titleContainer: {
 		paddingTop: 80,
 		paddingHorizontal: 40,
@@ -167,6 +168,12 @@ const styles = StyleSheet.create({
         fontWeight: "600"
 	},
     results: {
+        fontSize:16,
+        color: "#696969",
+        marginTop:10,
+        fontWeight: 'bold'
+    },
+    text: {
         fontSize:16,
         color: "#696969",
         marginTop:10,

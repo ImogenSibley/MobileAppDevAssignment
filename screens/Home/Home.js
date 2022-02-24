@@ -1,19 +1,15 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Image, SafeAreaView, FlatList} from 'react-native';
+import { View, Text, StyleSheet, TextInput, Image, SafeAreaView, FlatList, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomInput from '../../components/customInput';
 import CustomButton from '../../components/customButton';
 import CustomButtonSmall from '../../components/customButtonSmall';
 
-const Home = ({ navigate }) => {
+const Home = ({ navigation }) => {
 	const [firstName, setFirstName] = useState('');
     const [posts, setPosts] = useState('');
     const [newPost, setNewPost] = useState('');
-    const [friendList, setFriendList] = useState('');
-    const [friendUserID, setFriendUserID] = useState('');
-    const [friendUserIDs, setFriendUserIDs] = useState([]);
-    const [friendsPosts, setFriendsPosts] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
 	const getFirstName = async () => {
@@ -66,55 +62,6 @@ const Home = ({ navigate }) => {
         .catch((error) => {
             console.log(error);
         })
-    }
-
-    const getFriendList = async () => {
-        const value = await AsyncStorage.getItem('@session_token');
-        const userID = await AsyncStorage.getItem('@user_id')
-        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/friends", {
-            'headers': {
-                'X-Authorization': value
-            }
-        })
-            .then((response) => {
-                if (response.status === 200) {
-                    return response.json()
-                } else if (response.status === 401) {
-                    navigation.navigate("Login");
-                } else {
-                    throw 'Something went wrong';
-                }
-            }).then((responseJson) => {
-                setFriendList(responseJson);
-                setFriendUserIDs(responseJson.user_id);
-                console.log(responseJson.user_id);
-            })
-            .catch((error) => {
-                console.log(error);
-            })
-    }
-
-    const getFriendsPosts = async (requestedUserID) => {
-        const value = await AsyncStorage.getItem('@session_token');
-        return fetch("http://localhost:3333/api/1.0.0/user/" + requestedUserID + "/post", {
-            'headers': {
-                'X-Authorization': value
-            }
-        })
-            .then((response) => {
-                if (response.status === 200) {
-                    return response.json()
-                } else if (response.status === 401) {
-                    navigation.navigate("Login");
-                } else {
-                    throw 'Something went wrong';
-                }
-            }).then((responseJson) => {
-                setFriendsPosts(responseJson);
-            })
-            .catch((error) => {
-                console.log(error);
-            })
     }
 
     const addNewPost = async (textInput) => {
@@ -170,24 +117,19 @@ const Home = ({ navigate }) => {
         })
     }
 
+    const onEditPostPressed = (postID) => {
+        //store this ID to fetch details of post ID from edit page
+		navigation.navigate("Edit Post", {postID: postID});
+	}
+
     const ItemView = ({item}) => {
         return (
         <View style={styles.postContainer}>
             <Text style={styles.post}>
                 {item.id}{item.author.first_name}{' '}{item.author.last_name}{' - '}{item.text}{' '}{item.timestamp}{' - Likes: '}{item.numLikes}
-                {' '}<CustomButtonSmall text="Edit"/>{' '}<CustomButtonSmall text="Delete" onPress={() => deletePost(item.post_id)}/>
+                {' '}<CustomButtonSmall text="Edit" onPress={() => onEditPostPressed(item.post_id)}/>{' '}<CustomButtonSmall text="Delete" onPress={() => deletePost(item.post_id)}/>
             </Text>
         </View>
-        );
-    }
-
-    const FriendItemView = ({ item }) => {
-        return (
-            <View style={styles.postContainer}>
-                <Text style={styles.post}>
-                    {item.id}{item.author.first_name}{' '}{item.author.last_name}{' - '}{item.text}{' '}{item.timestamp}{' - Likes: '}{item.numLikes}
-                </Text>
-            </View>
         );
     }
 
@@ -210,11 +152,6 @@ const Home = ({ navigate }) => {
         checkLoggedIn();
         getFirstName();
         getAllPosts();
-        getFriendList();
-        getFriendsPosts();
-        //for all user IDs in friends list {
-        //getFriendsPosts(requestedUserID);
-        //}
     }, [])
 
 
@@ -226,7 +163,8 @@ const Home = ({ navigate }) => {
         );
     } else {
         return (
-            <SafeAreaView style={styles.root}>
+        <SafeAreaView style={styles.root}>
+            <ScrollView>
                 <View style={styles.header}>
                     {/*Spacebook Logo*/}
                     {/*Homepage*/}
@@ -239,6 +177,8 @@ const Home = ({ navigate }) => {
                      <CustomInput placeholder="Write your post here..." value={newPost} setValue={setNewPost} />
                      {/*Button to Post*/}
                      <CustomButton text="Post" onPress={() => addNewPost(newPost)} />
+                </View>
+                <View style={styles.container}>
                      {/*Posts go here*/}
                      <FlatList
                          data={posts}
@@ -246,14 +186,9 @@ const Home = ({ navigate }) => {
                          ItemSeperatorComponent={ItemSeperatorView}
                          renderItem={ItemView}
                      />
-                     <FlatList
-                         data={friendsPosts}
-                         keyExtractor={(item, index) => index.toString()}
-                         ItemSeperatorComponent={ItemSeperatorView}
-                         renderItem={FriendItemView}
-                     />
                 </View>
-            </SafeAreaView>
+            </ScrollView>
+        </SafeAreaView>
         );
     }
 }
@@ -266,19 +201,16 @@ const styles = StyleSheet.create({
     header:{
         backgroundColor: "#45ded0",
         height:200,
-    },
-    body:{
-        marginTop:40,
+        padding: 10,
     },
 	container: {
-		flex: 1,
-        alignItems: 'center',
-        padding: 30,
+		alignItems: 'center',
+        paddingTop: 20,
 	},
 	titleContainer: {
 		paddingTop: 80,
 		paddingHorizontal: 40,
-        padding: 30,
+        padding: 40,
         alignSelf: 'center'
 	},
 	sectionTitle: {
