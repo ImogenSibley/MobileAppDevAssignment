@@ -12,6 +12,12 @@ const Home = ({ navigation }) => {
     const [newPost, setNewPost] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
+    useEffect(() => {
+        checkLoggedIn();
+        getFirstName();
+        getAllPosts();
+    }, [])
+
 	const getFirstName = async () => {
         const value = await AsyncStorage.getItem('@session_token');
         const userID = await AsyncStorage.getItem('@user_id')
@@ -111,7 +117,8 @@ const Home = ({ navigation }) => {
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            console.log(response.status);
+            getAllPosts();
+            //console.log(response.status);
         }).catch((error) => {
             console.log(error);
         })
@@ -133,13 +140,13 @@ const Home = ({ navigation }) => {
         );
     }
 
-  const ItemSeperatorView = () => {
-    return (
-        <View 
-            style={{ height: 0.5, width: '100%', backgroundColor: 'white'}}
-        />
-    );
-  }
+    const ItemSeperatorView = () => {
+        return (
+            <View 
+                style={{ height: 0.5, width: '100%', backgroundColor: 'white'}}
+            />
+        );
+    }
     
     const checkLoggedIn = async () => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -147,13 +154,6 @@ const Home = ({ navigation }) => {
             navigation.navigate('Login');
         }
     };
-
-    useEffect(() => {
-        checkLoggedIn();
-        getFirstName();
-        getAllPosts();
-    }, [])
-
 
     if (isLoading) {
         return (

@@ -6,7 +6,6 @@ import CustomButtonSmall from '../../components/customButtonSmall';
 const Friends = ({ navigation }) => {
     const [friendList, setFriendList] = useState('');
     const [search, setSearch] = useState('');
-    const [filterFriendList, setFilterFriendList] = useState('');
     const [errorMess, setErrorMess] = useState('0 friends.');
 
 	const getFriendList = async () => {
@@ -29,31 +28,38 @@ const Friends = ({ navigation }) => {
             if(responseJson.length !== 0) {
                 setErrorMess('');
             }
-            console.log(responseJson);
+            //console.log(responseJson);
             setFriendList(responseJson);
-            setFilterFriendList(responseJson);
         })
         .catch((error) => {
             console.log(error);
         })
     }
 
-    const searchFilter = (text) => {
-        if (text) {
-            const newData = friendList.filter((item) => {
-                const itemData = item.user_givenname 
-                    ? item.user_givenname.toUpperCase()
-                    : ''.toUpperCase()
-                const textData = text.toUpperCase();
-                return itemData.indexOf(textData) > -1;
-            });
-            setFilterFriendList(newData);
-            setSearch(text);
-        } else {
-            setFilterFriendList(friendList);
-            setSearch(text);
-        }
-    }
+    const searchFriends = async () => {
+        const value = await AsyncStorage.getItem('@session_token');
+        return fetch("http://localhost:3333/api/1.0.0/search?q=" + search + "&search_in=friends&limit=20&offset=0", {
+            'headers': {
+                'X-Authorization': value
+            }
+        })
+            .then((response) => {
+                if (response.status === 200) {
+                    return response.json()
+                } else if (response.status === 401) {
+                    this.props.navigation.navigate("Login");
+                } else {
+                    throw 'Something went wrong';
+                }
+            })
+            .then((responseJson) => {
+                //console.log(responseJson);
+                setFriendList(responseJson);
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    };
 
     const onViewProfilePressed = (requestedUserID) => {
         //store this ID to fetch details from user ID on their profile
@@ -94,6 +100,7 @@ const Friends = ({ navigation }) => {
 		<SafeAreaView style={styles.root}>
         <ScrollView>
             <View style={styles.header}>
+                <View style={styles.body}>
                 <View style={styles.container}>
                     {/*Friends Page*/}
                     <View style={styles.titleContainer}>
@@ -101,15 +108,17 @@ const Friends = ({ navigation }) => {
 			        </View>
                     <Text style={styles.text}>{errorMess}</Text>
                     {/*Text Input for Searching for friends*/}
-			        <TextInput style={styles.inputContainer} placeholder="Find Friends..." onChangeText={(text) => searchFilter(text)} value={search}/>
+			        <TextInput style={styles.inputContainer} placeholder="Find Friends..." onChangeText={(text) => setSearch(text)} value={search}/>
+                    <CustomButtonSmall text="Search" onPress={() => searchFriends()} />
                     <View style={styles.results}>
                         <FlatList
-                            data={filterFriendList}
+                            data={friendList}
                             keyExtractor={(item, index) => index.toString()}
                             ItemSeperatorComponent={ItemSeperatorView}
                             renderItem={ItemView}
                         />
                     </View>
+                </View>
                 </View>
             </View>
         </ScrollView>
@@ -132,6 +141,9 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-start',
 		alignItems: 'center',
 		padding: 10,
+    },
+    body: {
+        marginTop: 40,
     },
 	titleContainer: {
 		paddingTop: 80,

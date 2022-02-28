@@ -1,9 +1,11 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, SafeAreaView, ScrollView} from 'react-native';
+import { View, Text, StyleSheet, TextInput, SafeAreaView, ScrollView, Platform, Image } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomInput from '../../components/customInput';
 import CustomButton from '../../components/customButton';
+import CustomButtonSmall from '../../components/customButtonSmall';
 
 const AccountSettings = () => {
 	const [email, setEmail] = useState('');
@@ -13,6 +15,13 @@ const AccountSettings = () => {
 	const [lastName, setLastName] = useState('');
 	const [errorMess, setErrorMess] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [photo, setPhoto] = useState(null);
+
+    useEffect(() => {
+        checkLoggedIn();
+        setIsLoading(false);
+        ImagePicker.getMediaLibraryPermissionsAsync(true);
+    }, [])
 
     const updateAccountDetails = async (firstInput, lastInput, emailInput, passInput) => {
         const value = await AsyncStorage.getItem("@session_token");
@@ -142,10 +151,39 @@ const AccountSettings = () => {
         }
     };
 
-     useEffect(() => {
-        checkLoggedIn();
-        setIsLoading(false);
-    }, [])
+    const choosePhoto = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+        console.log(result);
+        if (!result.cancelled) {
+            setPhoto(result.uri);
+        }
+    };
+
+    const uploadPhoto = async (data) => {
+        let response = await fetch(data.base64);
+        let profilePicture = await response.blob();
+        const value = await AsyncStorage.getItem('@session_token');
+        const userID = await AsyncStorage.getItem('@user_id')
+        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/photo", {
+            method: "POST",
+            headers: {
+                "Content-Type": "image/png",
+                "X-Authorization": value
+            },
+            body: profilePicture
+        })
+        .then((response) => {
+            console.log("Picture added", response);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
 
 	if (isLoading) {
        return (
@@ -158,12 +196,13 @@ const AccountSettings = () => {
             <SafeAreaView style={styles.root}>
             <ScrollView>
                 <View style={styles.header}>
-                    {/*Spacebook Logo*/}
+                    <Image style={styles.avatar} source={{ uri: photo }} /> 
                     {/*Update Account Details Page*/}
                     <View style={styles.titleContainer}>
                         <Text style={styles.sectionTitle}>Update Account Details</Text>
                     </View>
                 </View>
+                    <View style={styles.body}>
                 <View style={styles.container}>
                      <Text style={styles.post}>{errorMess}</Text>
                 </View>
@@ -187,6 +226,11 @@ const AccountSettings = () => {
                      {/*Button to Save Changes or Delete*/}
                      <CustomButton text="Save Changes" onPress={() => updateAccountDetails(firstName, lastName, email, password, passwordCheck)} />
                 </View>
+                <View style={styles.container}>
+                     {/*Button to Photo and Button to Upload*/}
+                            <CustomButtonSmall text="Choose Photo" onPress={choosePhoto}/> <CustomButtonSmall text="Upload Photo" onPress={() => uploadPhoto(photo)} />
+                </View>
+                </View>
             </ScrollView>
             </SafeAreaView>
         );
@@ -201,6 +245,17 @@ const styles = StyleSheet.create({
     header:{
         backgroundColor: "#45ded0",
         height:200,
+    },
+    avatar: {
+        width: 130,
+        height: 130,
+        borderRadius: 63,
+        borderWidth: 4,
+        borderColor: "white",
+        marginBottom: 10,
+        alignSelf: 'center',
+        position: 'absolute',
+        marginTop: 130
     },
     body:{
         marginTop:40,

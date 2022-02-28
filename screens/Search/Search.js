@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet, TextInput, Image, SafeAreaView, FlatList, ScrollView} from 'react-native';
 import CustomAddButton from '../../components/customAddButton';
+import CustomButtonSmall from '../../components/customButtonSmall';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Search = () => {
@@ -10,10 +11,13 @@ const Search = () => {
   const [requestedUserID, setRequestedUserID] = useState('');
   const [errorMess, setErrorMess] = useState('');
 
-  const getAllUsers = async () => {
+ useEffect(() => {
+      checkLoggedIn();
+ }, []);
+
+  const searchAllUsers = async () => {
     const value = await AsyncStorage.getItem('@session_token');
-      return fetch("http://localhost:3333/api/1.0.0/search", {
-      //return fetch("http://localhost:3333/api/1.0.0/search?q=" + user_givenname + "%20"user_familyname + "&search_in=all&limit=20&offset=0", {
+      return fetch("http://localhost:3333/api/1.0.0/search?q=" + search + "&search_in=all&limit=20&offset=0", {
           'headers': {
             'X-Authorization':  value
           }
@@ -35,7 +39,7 @@ const Search = () => {
         .catch((error) => {
             console.log(error);
         })
-  };
+    };
 
   const checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
@@ -43,23 +47,6 @@ const Search = () => {
         this.props.navigation.navigate('Login');
     }
   };
-
-  const searchFilter = (text) => {
-        if (text) {
-            const newData = userList.filter((item) => {
-                const itemData = item.user_givenname 
-                    ? item.user_givenname.toUpperCase()
-                    : ''.toUpperCase()
-                const textData = text.toUpperCase();
-                return itemData.indexOf(textData) > -1;
-            });
-            setFilterUserList(newData);
-            setSearch(text);
-        } else {
-            setFilterUserList(userList);
-            setSearch(text);
-        }
-  }
 
   const onAddFriend = async (requestedUserID) => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -110,15 +97,11 @@ const Search = () => {
     );
   }
 
-   useEffect(() => {
-        checkLoggedIn();
-        getAllUsers();
-    }, []);
-
     return (
 		<SafeAreaView style={styles.root}>
         <ScrollView>
             <View style={styles.header}>
+                <View style={styles.body}>
                 <View style={styles.container}>
                     {/*Search Page*/}
                     <View style={styles.titleContainer}>
@@ -126,15 +109,17 @@ const Search = () => {
 			        </View>
                     <Text style={styles.text}>{errorMess}</Text>
                     {/*Text Input for Searching for friends*/}
-			        <TextInput style={styles.inputContainer} placeholder="Find Friends..." onChangeText={(text) => searchFilter(text)} value={search}/>
+                        <TextInput style={styles.inputContainer} placeholder="Find Friends..." onChangeText={(text) => setSearch(text)} value={search} />
+                        <CustomButtonSmall text="Search" onPress={() => searchAllUsers()} />
                     <View style={styles.results}>
                         <FlatList
-                            data={filterUserList}
+                            data={userList}
                             keyExtractor={(item, index) => index.toString()}
                             ItemSeperatorComponent={ItemSeperatorView}
                             renderItem={ItemView}
                         />
                     </View>
+                </View>
                 </View>
             </View>
         </ScrollView>
@@ -157,6 +142,9 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-start',
 		alignItems: 'center',
 		padding: 10,
+    },
+    body: {
+        marginTop: 40,
     },
 	titleContainer: {
 		paddingTop: 80,

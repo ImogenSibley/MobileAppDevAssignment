@@ -12,6 +12,14 @@ const OtherProfile = ({route, navigation}) => {
     const [numOfFriends, setNumOfFriends] = useState('');
     const [posts, setPosts] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [photo, setPhoto] = useState(null);
+
+    useEffect(() => {
+        checkLoggedIn();
+        getUserData();
+        getAllPosts();
+        getUserPhoto();
+    }, [])
 
     const getUserData = async () => {
         let requestedUserID = route.params.requestedUserID;
@@ -44,6 +52,29 @@ const OtherProfile = ({route, navigation}) => {
         })
     }
 
+    const getUserPhoto = async () => {
+        const value = await AsyncStorage.getItem('@session_token');
+        const userID = await AsyncStorage.getItem('@user_id')
+        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/photo", {
+            method: 'GET',
+            headers: {
+                'X-Authorization': value
+            }
+        })
+        .then((response) => {
+             return response.blob();
+        })
+        .then((responseBlob) => {
+            let data = URL.createObjectURL(responseBlob);
+            setPhoto(data);
+            console.log(data);
+            setIsLoading(false);
+        })
+        .catch((err) => {
+            console.log("error", err)
+        });
+    }
+
     const getAllPosts = async () => {
         const value = await AsyncStorage.getItem('@session_token');
         let requestedUserID = route.params.requestedUserID;
@@ -63,7 +94,6 @@ const OtherProfile = ({route, navigation}) => {
             }).then((responseJson) => {
                 console.log(responseJson);
                 setPosts(responseJson);
-                setIsLoading(false);
             })
             .catch((error) => {
                 console.log(error);
@@ -152,11 +182,7 @@ const OtherProfile = ({route, navigation}) => {
         }
     };
 
-    useEffect(() => {
-        checkLoggedIn();
-        getUserData();
-        getAllPosts();
-    }, [])
+    // default photo? uri: 'https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg'
     
     if (isLoading) {
         return (
@@ -169,7 +195,7 @@ const OtherProfile = ({route, navigation}) => {
 	<SafeAreaView style={styles.root}>
         <ScrollView>
             <View style={styles.header}></View>
-            <Image style={styles.avatar} source={{uri: 'https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg'}}/>
+                <Image style={styles.avatar} source={{uri: photo}}/>
                 <View style={styles.body}>
                     <View style={styles.container}>
                         <Text style={styles.name}>{firstName} {lastName}</Text>
