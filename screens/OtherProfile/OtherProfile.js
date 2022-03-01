@@ -13,13 +13,21 @@ const OtherProfile = ({route, navigation}) => {
     const [posts, setPosts] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [photo, setPhoto] = useState(null);
+    const [errorMess, setErrorMess] = useState('');
 
     useEffect(() => {
         checkLoggedIn();
         getUserData();
-        getAllPosts();
         getUserPhoto();
+        getAllPosts();
     }, [])
+
+    const refreshPage = () => {
+        checkLoggedIn();
+        getUserData();
+        getUserPhoto();
+        getAllPosts();
+    }
 
     const getUserData = async () => {
         let requestedUserID = route.params.requestedUserID;
@@ -62,7 +70,15 @@ const OtherProfile = ({route, navigation}) => {
             }
         })
         .then((response) => {
-             return response.blob();
+            if (response.status === 200) {
+                return response.blob();
+            } else if (response.status === 401) {
+                navigation.navigate("Login");
+            } else if (response.status === 404) {
+                setPhoto('https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg');
+            } else {
+                throw 'Something went wrong';
+            }
         })
         .then((responseBlob) => {
             let data = URL.createObjectURL(responseBlob);
@@ -92,7 +108,7 @@ const OtherProfile = ({route, navigation}) => {
                     throw 'Something went wrong';
                 }
             }).then((responseJson) => {
-                console.log(responseJson);
+                //console.log(responseJson);
                 setPosts(responseJson);
             })
             .catch((error) => {
@@ -110,6 +126,7 @@ const OtherProfile = ({route, navigation}) => {
             },
         }).then((response) => {
             if (response.status === 200 || response.status === 201) {
+                setErrorMess('Post Liked.');
                 return response.json()
             } else if (response.status === 401) {
                 navigation.navigate("Login");
@@ -138,6 +155,7 @@ const OtherProfile = ({route, navigation}) => {
             },
         }).then((response) => {
             if (response.status === 200 || response.status === 201) {
+                setErrorMess('Like Removed.');
                 return response.json()
             } else if (response.status === 401) {
                 navigation.navigate("Login");
@@ -194,7 +212,9 @@ const OtherProfile = ({route, navigation}) => {
 	return (
 	<SafeAreaView style={styles.root}>
         <ScrollView>
-            <View style={styles.header}></View>
+            <View style={styles.header}>
+                <CustomButtonSmall text="Refresh" onPress={() => refreshPage()} />
+            </View>
                 <Image style={styles.avatar} source={{uri: photo}}/>
                 <View style={styles.body}>
                     <View style={styles.container}>
@@ -203,6 +223,7 @@ const OtherProfile = ({route, navigation}) => {
                         <Text style={styles.info}>Following: {numOfFriends}</Text>
                         {/*If not already friends, show button to add user as friend*/}
 			            <CustomButton text="Friends"/>
+                        <Text style={styles.post}>{errorMess}</Text>
                         <FlatList
                             data={posts}
                             keyExtractor={(item, index) => index.toString()}

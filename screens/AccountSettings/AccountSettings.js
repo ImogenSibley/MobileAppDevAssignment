@@ -21,6 +21,7 @@ const AccountSettings = () => {
         checkLoggedIn();
         setIsLoading(false);
         ImagePicker.getMediaLibraryPermissionsAsync(true);
+        getUserPhoto();
     }, [])
 
     const updateAccountDetails = async (firstInput, lastInput, emailInput, passInput) => {
@@ -151,6 +152,37 @@ const AccountSettings = () => {
         }
     };
 
+    const getUserPhoto = async () => {
+        const value = await AsyncStorage.getItem('@session_token');
+        const userID = await AsyncStorage.getItem('@user_id')
+        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/photo", {
+            method: 'GET',
+            headers: {
+                'X-Authorization': value
+            }
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                return response.blob();
+            } else if (response.status === 401) {
+                navigation.navigate("Login");
+            } else if (response.status === 404) {
+                setPhoto('https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg');
+            } else {
+                throw 'Something went wrong';
+            }
+        })
+        .then((responseBlob) => {
+            let data = URL.createObjectURL(responseBlob);
+            setPhoto(data);
+            console.log(data);
+            setIsLoading(false);
+        })
+        .catch((err) => {
+            console.log("error", err)
+        });
+    }
+
     const choosePhoto = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -172,13 +204,14 @@ const AccountSettings = () => {
         return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/photo", {
             method: "POST",
             headers: {
-                "Content-Type": "image/png",
+                "Content-Type": "image/jpeg",
                 "X-Authorization": value
             },
             body: profilePicture
         })
         .then((response) => {
             console.log("Picture added", response);
+            setErrorMess('Picture Updated.');
         })
         .catch((err) => {
             console.log(err);

@@ -18,9 +18,16 @@ const Profile = ({ navigation }) => {
     useEffect(() => {
         checkLoggedIn();
         getUserData();
-        getAllPosts();
         getUserPhoto();
+        getAllPosts();
     }, [])
+
+    const refreshPage = () => {
+        checkLoggedIn();
+        getUserData();
+        getUserPhoto();
+        getAllPosts();
+    }
 
 	const getUserData = async () => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -61,19 +68,24 @@ const Profile = ({ navigation }) => {
             headers: {
                 'X-Authorization': value
             }
-        })
-            .then((response) => {
+        }) .then((response) => {
+            if (response.status === 200) {
                 return response.blob();
-            })
-            .then((responseBlob) => {
-                let data = URL.createObjectURL(responseBlob);
-                setPhoto(data);
-                console.log(data);
-                setIsLoading(false);
-            })
-            .catch((err) => {
-                console.log("error", err)
-            });
+            } else if (response.status === 401) {
+                navigation.navigate("Login");
+            } else if (response.status === 404) {
+                setPhoto('https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg');
+            } else {
+                throw 'Something went wrong';
+            }
+        }) .then((responseBlob) => {
+            let data = URL.createObjectURL(responseBlob);
+            setPhoto(data);
+            //console.log(data);
+            setIsLoading(false);
+        }) .catch((err) => {
+            console.log("error", err)
+        });
     }
 
     const getAllPosts = async () => {
@@ -142,8 +154,10 @@ const Profile = ({ navigation }) => {
 	return (
 	<SafeAreaView style={styles.root}>
         <ScrollView>
-            <View style={styles.header}></View>
-                <Image style={styles.avatar} source={{uri: photo}}/> 
+            <View style={styles.header}>
+                <CustomButtonSmall text="Refresh" onPress={() => refreshPage()} />
+            </View>
+                <Image source={{ uri: photo }} style={styles.avatar}/>
                 <View style={styles.body}>
                     <View style={styles.container}>
                         <Text style={styles.name}>{firstName} {lastName}</Text>

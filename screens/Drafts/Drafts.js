@@ -6,46 +6,29 @@ import CustomInput from '../../components/customInput';
 import CustomButton from '../../components/customButton';
 import CustomButtonSmall from '../../components/customButtonSmall';
 
-const EditPost = ({ route, navigation }) => {
-    const [postContent, setPostContent] = useState('');
-    const [postChanges, setPostChanges] = useState('');
+const Drafts = ({ navigation }) => {
+    const [post, setPost] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [errorMess, setErrorMess] = useState('');
 
-    const viewPost = async () => {
-        let postID = route.params.postID;
-        const value = await AsyncStorage.getItem("@session_token");
-        const userID = await AsyncStorage.getItem("@user_id")
-        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/post/" +postID, {
-            headers: {
-                "X-Authorization": value,
-            },
-        }).then((response) => {
-            if (response.status === 200 || response.status === 201) {
-                return response.json()
-            } else if (response.status === 401) {
-                navigation.navigate("Login");
-            } else {
-                console.log(response.status);
-                throw 'Something went wrong';
-            }
-        }).then((responseJson) => {
-            setIsLoading(false);
-            setPostContent(responseJson.text);
-            console.log(response.status);
-            console.log('Post Fetched.');
-        }).catch((error) => {
-            console.log(error);
-        })
+    const viewDraft = async () => {
+        //get from async storage
+        let draft = await AsyncStorage.getItem('@session_draft');
+        setPost(draft);
+        setIsLoading(false);
     }
 
-    const editPost = async (textInput) => {
-        let postID = route.params.postID;
+    const saveDraft = async (textInput) => {
+        await AsyncStorage.setItem('@session_draft', textInput);
+        setErrorMess("Draft Saved.");
+    }
+
+    const postDraft = async (textInput) => {
         const value = await AsyncStorage.getItem("@session_token");
         const userID = await AsyncStorage.getItem("@user_id")
         if (textInput != ''){
-        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/post/" + postID, {
-            method: 'PATCH',
+        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/post", {
+            method: 'POST',
             headers: {
                 "X-Authorization": value,
                 "Content-Type": "application/json"
@@ -55,7 +38,6 @@ const EditPost = ({ route, navigation }) => {
             })
         }).then((response) => {
             if (response.status === 200 || response.status === 201) {
-                setErrorMess('Post Edited.');
                 return response.json()
             } else if (response.status === 401) {
                 navigation.navigate("Login");
@@ -64,7 +46,8 @@ const EditPost = ({ route, navigation }) => {
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            console.log('Post Edited.');
+            setErrorMess('Draft Posted.')
+            //console.log(responseJson);
         }).catch((error) => {
             console.log(error);
         })
@@ -73,30 +56,10 @@ const EditPost = ({ route, navigation }) => {
         }
     }
 
-    const deletePost = async () => {
-        let postID = route.params.postID;
-        const value = await AsyncStorage.getItem("@session_token");
-        const userID = await AsyncStorage.getItem("@user_id");
-        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/post/" + postID, {
-            method: 'DELETE',
-            headers: {
-                "X-Authorization": value,
-            }
-        }).then((response) => {
-            if (response.status === 200 || response.status === 201) {
-                setErrorMess('Post Deleted.');
-                return response.json()
-            } else if (response.status === 401) {
-                navigation.navigate("Login");
-            } else {
-                console.log(response.status);
-                throw 'Something went wrong';
-            }
-        }).then((responseJson) => {
-            console.log('Post Deleted.');
-        }).catch((error) => {
-            console.log(error);
-        })
+    const deleteDraft = async () => {
+        //remove from async storage
+        await AsyncStorage.removeItem('@session_draft');
+        setErrorMess('Draft Deleted.');
     }
     
     const checkLoggedIn = async () => {
@@ -108,7 +71,7 @@ const EditPost = ({ route, navigation }) => {
 
     useEffect(() => {
         checkLoggedIn();
-        viewPost();
+        viewDraft();
     }, [])
 
 
@@ -122,23 +85,23 @@ const EditPost = ({ route, navigation }) => {
         return (
             <SafeAreaView style={styles.root}>
                 <View style={styles.header}>
-                    {/*Spacebook Logo*/}
-                    {/*Edit Post Page*/}
+                    {/*Drafts Page*/}
                     <View style={styles.titleContainer}>
-                        <Text style={styles.sectionTitle}>Edit Post</Text>
+                        <Text style={styles.sectionTitle}>Drafts</Text>
                     </View>
                 </View>
                 <View style={styles.container}>
                      <Text style={styles.post}>{errorMess}</Text>
-                     {/*Post displayed here*/}
-                      <View style={styles.postContainer}>
-                        <Text style={styles.post}>{postContent}</Text>
+                     {/*Draft displayed here*/}
+                     <View style={styles.postContainer}>
+                        <Text style={styles.post}>{post}</Text>
                      </View>
-                     {/*Text Input for Editing a Post*/}
-                     <CustomInput placeholder="Edit your post here..." value={postChanges} setValue={setPostChanges} />
-                     {/*Button to Save Changes or Delete*/}
-                     <CustomButton text="Save Changes" onPress={() => editPost(postChanges)} />
-                     <CustomButton text="Delete" onPress={() => deletePost()} />
+                     {/*Text Input for Editing a Draft*/}
+                     <CustomInput placeholder="Edit your Draft here..." value={post} setValue={setPost} />
+                     {/*Button to Post or Delete*/}
+                     <CustomButton text="Save Edited Draft" onPress={() => saveDraft(post)} />
+                     <CustomButton text="Post Draft" onPress={() => postDraft(post)} />
+                     <CustomButton text="Delete" onPress={() => deleteDraft()} />
                 </View>
             </SafeAreaView>
         );
@@ -193,4 +156,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default EditPost;
+export default Drafts;

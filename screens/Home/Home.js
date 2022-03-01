@@ -11,12 +11,19 @@ const Home = ({ navigation }) => {
     const [posts, setPosts] = useState('');
     const [newPost, setNewPost] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [errorMess, setErrorMess] = useState('');
 
     useEffect(() => {
         checkLoggedIn();
         getFirstName();
         getAllPosts();
     }, [])
+
+    const refreshPage = () => {
+        checkLoggedIn();
+        getFirstName();
+        getAllPosts();
+    }
 
 	const getFirstName = async () => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -70,9 +77,15 @@ const Home = ({ navigation }) => {
         })
     }
 
+    const saveAsDraft = async (textInput) => {
+        await AsyncStorage.setItem('@session_draft', textInput);
+        setErrorMess("Draft Saved.");
+    }
+
     const addNewPost = async (textInput) => {
         const value = await AsyncStorage.getItem("@session_token");
         const userID = await AsyncStorage.getItem("@user_id")
+        if (textInput != ''){
         return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/post", {
             method: 'POST',
             headers: {
@@ -84,6 +97,8 @@ const Home = ({ navigation }) => {
             })
         }).then((response) => {
             if (response.status === 200 || response.status === 201) {
+                setErrorMess('');
+                setNewPost('');
                 return response.json()
             } else if (response.status === 401) {
                 navigation.navigate("Login");
@@ -97,6 +112,9 @@ const Home = ({ navigation }) => {
         }).catch((error) => {
             console.log(error);
         })
+        } else {
+            setErrorMess('Please write at least 1 character before posting.');
+        }
     }
 
     const deletePost = async (postID) => {
@@ -109,6 +127,7 @@ const Home = ({ navigation }) => {
             }
         }).then((response) => {
             if (response.status === 200 || response.status === 201) {
+                setErrorMess("Post Deleted.");
                 return response.json()
             } else if (response.status === 401) {
                 navigation.navigate("Login");
@@ -128,6 +147,11 @@ const Home = ({ navigation }) => {
         //store this ID to fetch details of post ID from edit page
 		navigation.navigate("Edit Post", {postID: postID});
 	}
+
+    const onViewDraftsPressed = () => {
+        //go to drafts page
+        navigation.navigate('Drafts');
+    }
 
     const ItemView = ({item}) => {
         return (
@@ -166,17 +190,19 @@ const Home = ({ navigation }) => {
         <SafeAreaView style={styles.root}>
             <ScrollView>
                 <View style={styles.header}>
-                    {/*Spacebook Logo*/}
+                <CustomButtonSmall text="Refresh" onPress={() => refreshPage()} />
                     {/*Homepage*/}
                     <View style={styles.titleContainer}>
                         <Text style={styles.sectionTitle}>Welcome back {firstName}!</Text>
                     </View>
                 </View>
                 <View style={styles.container}>
-                     {/*Text Input for Writing a Post*/}
-                     <CustomInput placeholder="Write your post here..." value={newPost} setValue={setNewPost} />
-                     {/*Button to Post*/}
-                     <CustomButton text="Post" onPress={() => addNewPost(newPost)} />
+                    <Text style={styles.post}>{errorMess}</Text>
+                    {/*Text Input for Writing a Post*/}
+                    <CustomInput placeholder="Write your post here..." value={newPost} setValue={setNewPost} />
+                    {/*Button to Post*/}
+                    <CustomButton text="Post" onPress={() => addNewPost(newPost)} /> 
+                    <CustomButtonSmall text="Save As Draft" onPress={() => saveAsDraft(newPost)} /> <CustomButtonSmall text="View Drafts" onPress={onViewDraftsPressed} />
                 </View>
                 <View style={styles.container}>
                      {/*Posts go here*/}
