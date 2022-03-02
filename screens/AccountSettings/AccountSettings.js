@@ -7,7 +7,7 @@ import CustomInput from '../../components/customInput';
 import CustomButton from '../../components/customButton';
 import CustomButtonSmall from '../../components/customButtonSmall';
 
-const AccountSettings = () => {
+const AccountSettings = ({ navigation }) => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
     const [passwordCheck, setPasswordCheck] = useState('');
@@ -18,11 +18,19 @@ const AccountSettings = () => {
     const [photo, setPhoto] = useState(null);
 
     useEffect(() => {
+        navigation.addListener('focus', () => {
+            refreshPage();
+        })
         checkLoggedIn();
         setIsLoading(false);
         ImagePicker.getMediaLibraryPermissionsAsync(true);
         getUserPhoto();
     }, [])
+
+    const refreshPage = () => {
+        checkLoggedIn();
+        getUserPhoto();
+    }
 
     const updateAccountDetails = async (firstInput, lastInput, emailInput, passInput) => {
         const value = await AsyncStorage.getItem("@session_token");
@@ -167,7 +175,7 @@ const AccountSettings = () => {
             } else if (response.status === 401) {
                 navigation.navigate("Login");
             } else if (response.status === 404) {
-                setPhoto('https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg');
+                throw 'Photo not found.';
             } else {
                 throw 'Something went wrong';
             }
@@ -175,7 +183,6 @@ const AccountSettings = () => {
         .then((responseBlob) => {
             let data = URL.createObjectURL(responseBlob);
             setPhoto(data);
-            console.log(data);
             setIsLoading(false);
         })
         .catch((err) => {
@@ -190,14 +197,13 @@ const AccountSettings = () => {
             aspect: [4, 3],
             quality: 1,
         });
-        console.log(result);
         if (!result.cancelled) {
             setPhoto(result.uri);
         }
     };
 
     const uploadPhoto = async (data) => {
-        let response = await fetch(data.base64);
+        let response = await fetch(data);
         let profilePicture = await response.blob();
         const value = await AsyncStorage.getItem('@session_token');
         const userID = await AsyncStorage.getItem('@user_id')
@@ -210,7 +216,7 @@ const AccountSettings = () => {
             body: profilePicture
         })
         .then((response) => {
-            console.log("Picture added", response);
+            console.log("Picture Added.");
             setErrorMess('Picture Updated.');
         })
         .catch((err) => {

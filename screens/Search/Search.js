@@ -107,10 +107,10 @@ const Search = () => {
                     <View style={styles.titleContainer}>
                         <Text style={styles.sectionTitle}>Search</Text>
 			        </View>
-                    <Text style={styles.text}>{errorMess}</Text>
                     {/*Text Input for Searching for friends*/}
-                        <TextInput style={styles.inputContainer} placeholder="Find Friends..." onChangeText={(text) => setSearch(text)} value={search} />
-                        <CustomButtonSmall text="Search" onPress={() => searchAllUsers()} />
+                    <TextInput style={styles.inputContainer} placeholder="Find Friends..." onChangeText={(text) => setSearch(text)} value={search} />
+                    <CustomButtonSmall text="Search" onPress={() => searchAllUsers()} />
+                    <Text style={styles.text}>{errorMess}</Text>
                     <View style={styles.results}>
                         <FlatList
                             data={userList}

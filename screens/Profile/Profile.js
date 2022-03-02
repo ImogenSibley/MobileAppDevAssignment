@@ -2,7 +2,6 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Text, View, SafeAreaView, StyleSheet, Image, FlatList, ScrollView } from 'react-native';
 import CustomButton from '../../components/customButton'; 
-import CustomButtonSmall from '../../components/customButtonSmall';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -16,6 +15,10 @@ const Profile = ({ navigation }) => {
     const [photo, setPhoto] = useState(null);
 
     useEffect(() => {
+        navigation.addListener('focus', () => {
+            refreshPage();
+        })
+
         checkLoggedIn();
         getUserData();
         getUserPhoto();
@@ -154,8 +157,7 @@ const Profile = ({ navigation }) => {
 	return (
 	<SafeAreaView style={styles.root}>
         <ScrollView>
-            <View style={styles.header}>
-                <CustomButtonSmall text="Refresh" onPress={() => refreshPage()} />
+            <View style={styles.header}>   
             </View>
                 <Image source={{ uri: photo }} style={styles.avatar}/>
                 <View style={styles.body}>
@@ -185,7 +187,8 @@ const styles = StyleSheet.create({
 	},
     header:{
         backgroundColor: "#45ded0",
-        height:200,
+        height: 200,
+        padding: 10,
     },
     avatar: {
         width: 130,

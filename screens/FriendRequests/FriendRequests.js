@@ -3,9 +3,22 @@ import { View, Text, StyleSheet, TextInput, Image, SafeAreaView, FlatList, Scrol
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomButtonSmall from '../../components/customButtonSmall';
 
-const FriendRequests = ({ navigate }) => {
+const FriendRequests = ({ navigation }) => {
 	const [friendRequests, setFriendRequests] = useState('');
     const [errorMess, setErrorMess] = useState('0 new requests.');
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            refreshPage();
+        })
+        checkLoggedIn();
+        getFriendRequests();
+    }, []);
+
+    const refreshPage = () => {
+        checkLoggedIn();
+        getFriendRequests();
+    }
 
 	const getFriendRequests = async () => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -24,7 +37,6 @@ const FriendRequests = ({ navigate }) => {
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            console.log(responseJson);
             setFriendRequests(responseJson);
             if(responseJson.length !== 0) {
                 setErrorMess('');
@@ -120,11 +132,6 @@ const FriendRequests = ({ navigate }) => {
         );
     }
 
-    useEffect(() => {
-      checkLoggedIn();
-      getFriendRequests();
-    }, []);
-
 	return (
 	<SafeAreaView style={styles.root}>
         <ScrollView>
@@ -157,7 +164,8 @@ const styles = StyleSheet.create({
 	},
 	header:{
         backgroundColor: "#45ded0",
-        height:200,
+        height: 200,
+        padding: 10,
     },
 	container: {
 		flex: 1,

@@ -16,6 +16,9 @@ const OtherProfile = ({route, navigation}) => {
     const [errorMess, setErrorMess] = useState('');
 
     useEffect(() => {
+        navigation.addListener('focus', () => {
+            refreshPage();
+        })
         checkLoggedIn();
         getUserData();
         getUserPhoto();
@@ -62,8 +65,8 @@ const OtherProfile = ({route, navigation}) => {
 
     const getUserPhoto = async () => {
         const value = await AsyncStorage.getItem('@session_token');
-        const userID = await AsyncStorage.getItem('@user_id')
-        return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/photo", {
+        let requestedUserID = route.params.requestedUserID;
+        return fetch("http://localhost:3333/api/1.0.0/user/" + requestedUserID + "/photo", {
             method: 'GET',
             headers: {
                 'X-Authorization': value
@@ -75,7 +78,7 @@ const OtherProfile = ({route, navigation}) => {
             } else if (response.status === 401) {
                 navigation.navigate("Login");
             } else if (response.status === 404) {
-                setPhoto('https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg');
+                throw 'Photo not found.';
             } else {
                 throw 'Something went wrong';
             }
@@ -83,7 +86,7 @@ const OtherProfile = ({route, navigation}) => {
         .then((responseBlob) => {
             let data = URL.createObjectURL(responseBlob);
             setPhoto(data);
-            console.log(data);
+            //console.log(data);
             setIsLoading(false);
         })
         .catch((err) => {
@@ -108,7 +111,6 @@ const OtherProfile = ({route, navigation}) => {
                     throw 'Something went wrong';
                 }
             }).then((responseJson) => {
-                //console.log(responseJson);
                 setPosts(responseJson);
             })
             .catch((error) => {
@@ -135,11 +137,10 @@ const OtherProfile = ({route, navigation}) => {
             } else if (response.status === 403){
                 throw 'You have already liked this post.';
             } else {
-                console.log(response.status);
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            console.log("Post Liked Successfully! - "+responseJson.status);
+            console.log("Post Liked Successfully!");
         }).catch((error) => {
             console.log(error);
         })
@@ -168,7 +169,7 @@ const OtherProfile = ({route, navigation}) => {
                 throw 'Something went wrong';
             }
         }).then((responseJson) => {
-            console.log("Removed Like Successfully! - "+responseJson.status);
+            console.log("Removed Like Successfully!");
         }).catch((error) => {
             console.log(error);
         })
@@ -199,8 +200,6 @@ const OtherProfile = ({route, navigation}) => {
             navigation.navigate('Login');
         }
     };
-
-    // default photo? uri: 'https://miro.medium.com/max/3150/1*I8orYDhyFrbI-p21DstL6A.jpeg'
     
     if (isLoading) {
         return (
@@ -213,7 +212,6 @@ const OtherProfile = ({route, navigation}) => {
 	<SafeAreaView style={styles.root}>
         <ScrollView>
             <View style={styles.header}>
-                <CustomButtonSmall text="Refresh" onPress={() => refreshPage()} />
             </View>
                 <Image style={styles.avatar} source={{uri: photo}}/>
                 <View style={styles.body}>
@@ -246,6 +244,7 @@ const styles = StyleSheet.create({
     header: {
         backgroundColor: "#45ded0",
         height: 200,
+        padding: 10,
     },
     avatar: {
         width: 130,

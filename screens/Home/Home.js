@@ -14,6 +14,9 @@ const Home = ({ navigation }) => {
     const [errorMess, setErrorMess] = useState('');
 
     useEffect(() => {
+        navigation.addListener('focus', () => {
+            refreshPage();
+        })
         checkLoggedIn();
         getFirstName();
         getAllPosts();
@@ -79,6 +82,7 @@ const Home = ({ navigation }) => {
 
     const saveAsDraft = async (textInput) => {
         await AsyncStorage.setItem('@session_draft', textInput);
+        setNewPost('');
         setErrorMess("Draft Saved.");
     }
 
@@ -150,6 +154,7 @@ const Home = ({ navigation }) => {
 
     const onViewDraftsPressed = () => {
         //go to drafts page
+        setErrorMess('');
         navigation.navigate('Drafts');
     }
 
@@ -190,7 +195,6 @@ const Home = ({ navigation }) => {
         <SafeAreaView style={styles.root}>
             <ScrollView>
                 <View style={styles.header}>
-                <CustomButtonSmall text="Refresh" onPress={() => refreshPage()} />
                     {/*Homepage*/}
                     <View style={styles.titleContainer}>
                         <Text style={styles.sectionTitle}>Welcome back {firstName}!</Text>

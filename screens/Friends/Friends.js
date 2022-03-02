@@ -8,6 +8,19 @@ const Friends = ({ navigation }) => {
     const [search, setSearch] = useState('');
     const [errorMess, setErrorMess] = useState('0 friends.');
 
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            refreshPage();
+        })
+        checkLoggedIn();
+        getFriendList();
+    }, []);
+
+    const refreshPage = () => {
+        checkLoggedIn();
+        getFriendList();
+    }
+
 	const getFriendList = async () => {
         const value = await AsyncStorage.getItem('@session_token');
         const userID = await AsyncStorage.getItem('@user_id')
@@ -91,11 +104,6 @@ const Friends = ({ navigation }) => {
     );
   }
 
-    useEffect(() => {
-      checkLoggedIn();
-      getFriendList();
-    }, []);
-
 	return (
 		<SafeAreaView style={styles.root}>
         <ScrollView>
@@ -106,10 +114,10 @@ const Friends = ({ navigation }) => {
                     <View style={styles.titleContainer}>
                         <Text style={styles.sectionTitle}>My Friends</Text>
 			        </View>
-                    <Text style={styles.text}>{errorMess}</Text>
                     {/*Text Input for Searching for friends*/}
 			        <TextInput style={styles.inputContainer} placeholder="Find Friends..." onChangeText={(text) => setSearch(text)} value={search}/>
                     <CustomButtonSmall text="Search" onPress={() => searchFriends()} />
+                    <Text style={styles.text}>{errorMess}</Text>
                     <View style={styles.results}>
                         <FlatList
                             data={friendList}

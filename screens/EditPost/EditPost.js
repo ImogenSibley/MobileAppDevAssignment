@@ -12,6 +12,19 @@ const EditPost = ({ route, navigation }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [errorMess, setErrorMess] = useState('');
 
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            refreshPage();
+        })
+        checkLoggedIn();
+        viewPost();
+    }, [])
+
+    const refreshPage = () => {
+        checkLoggedIn();
+        viewPost();
+    }
+
     const viewPost = async () => {
         let postID = route.params.postID;
         const value = await AsyncStorage.getItem("@session_token");
@@ -106,12 +119,6 @@ const EditPost = ({ route, navigation }) => {
         }
     };
 
-    useEffect(() => {
-        checkLoggedIn();
-        viewPost();
-    }, [])
-
-
     if (isLoading) {
         return (
             <SafeAreaView style={styles.root}>
@@ -128,12 +135,12 @@ const EditPost = ({ route, navigation }) => {
                         <Text style={styles.sectionTitle}>Edit Post</Text>
                     </View>
                 </View>
+                <Text style={styles.text}>{errorMess}</Text>
+                {/*Post displayed here*/}
+                <View style={styles.postContainer}>
+                    <Text style={styles.post}>{postContent}</Text>
+                </View>
                 <View style={styles.container}>
-                     <Text style={styles.post}>{errorMess}</Text>
-                     {/*Post displayed here*/}
-                      <View style={styles.postContainer}>
-                        <Text style={styles.post}>{postContent}</Text>
-                     </View>
                      {/*Text Input for Editing a Post*/}
                      <CustomInput placeholder="Edit your post here..." value={postChanges} setValue={setPostChanges} />
                      {/*Button to Save Changes or Delete*/}
@@ -152,7 +159,8 @@ const styles = StyleSheet.create({
 	},
     header:{
         backgroundColor: "#45ded0",
-        height:200,
+        height: 200,
+        padding: 10,
     },
     body:{
         marginTop:40,
@@ -178,10 +186,20 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignSelf: 'center',
         alignContent: 'center',
-    	backgroundColor: '#ffffff',
+        backgroundColor: '#ffffff',
         width: '90%',
-		borderColor: '#45ded0',
-		borderWidth: 1,	
+        height: '35%',
+        borderColor: '#45ded0',
+        borderWidth: 1,
+    },
+    text: {
+        fontSize: 16,
+        color: "#696969",
+        fontWeight: 'bold',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        alignSelf: 'center',
     },
     post: {
         fontSize:16,

@@ -5,11 +5,30 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomInput from '../../components/customInput';
 import CustomButton from '../../components/customButton';
 import CustomButtonSmall from '../../components/customButtonSmall';
+import CalendarPicker from 'react-native-calendar-picker';
 
 const Drafts = ({ navigation }) => {
     const [post, setPost] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [errorMess, setErrorMess] = useState('');
+    const [selectedStartDate, setSelectedStartDate] = useState(null);
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            refreshPage();
+        })
+        checkLoggedIn();
+        viewDraft();
+    }, [])
+
+    const refreshPage = () => {
+        checkLoggedIn();
+        viewDraft();
+    }
+
+    const onDateChange = (date) => {
+        setSelectedStartDate(date);
+    }
 
     const viewDraft = async () => {
         //get from async storage
@@ -61,6 +80,13 @@ const Drafts = ({ navigation }) => {
         await AsyncStorage.removeItem('@session_draft');
         setErrorMess('Draft Deleted.');
     }
+
+    const onScheduleDraftPressed = () => {
+    //if (current date matches scheduled date) {
+    //postDraft
+    //} 
+        setErrorMess('Post Scheduled.');
+    }
     
     const checkLoggedIn = async () => {
         const value = await AsyncStorage.getItem('@session_token');
@@ -68,12 +94,6 @@ const Drafts = ({ navigation }) => {
             navigation.navigate('Login');
         }
     };
-
-    useEffect(() => {
-        checkLoggedIn();
-        viewDraft();
-    }, [])
-
 
     if (isLoading) {
         return (
@@ -90,19 +110,49 @@ const Drafts = ({ navigation }) => {
                         <Text style={styles.sectionTitle}>Drafts</Text>
                     </View>
                 </View>
+                <Text style={styles.text}>{errorMess}</Text>
+                <View style={styles.body}>
+                <View>
+                     <CalendarPicker
+                         startFromMonday={true}
+                         minDate={new Date(2018, 1, 1)}
+                         maxDate={new Date(2050, 6, 3)}
+                         weekdays={['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun']}
+                         months={['January', 'Febraury', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',]}
+                         previousTitle="Previous"
+                         nextTitle="Next"
+                         todayBackgroundColor="#45ded0"
+                         selectedDayColor="#28a3a5"
+                         selectedDayTextColor="#000000"
+                         scaleFactor={375}
+                         textStyle={{
+                             color: '#000000',
+                         }}
+                         onDateChange={onDateChange}
+                     />
+                     <Text style={styles.text}>
+                         Selected Date :
+                     </Text>
+                     <Text style={styles.text}>
+                         {selectedStartDate ? selectedStartDate.toString() : ''}
+                     </Text>
+                    </View>
+                <View style={styles.buttonContainer}>
+                        <CustomButtonSmall text="Schedule Post" onPress={onScheduleDraftPressed}/>
+                </View>
+                {/*Draft displayed here*/}
+                <View style={styles.postContainer}>
+                    <Text style={styles.post}>{post}</Text>
+                </View>
                 <View style={styles.container}>
-                     <Text style={styles.post}>{errorMess}</Text>
-                     {/*Draft displayed here*/}
-                     <View style={styles.postContainer}>
-                        <Text style={styles.post}>{post}</Text>
-                     </View>
                      {/*Text Input for Editing a Draft*/}
                      <CustomInput placeholder="Edit your Draft here..." value={post} setValue={setPost} />
                      {/*Button to Post or Delete*/}
                      <CustomButton text="Save Edited Draft" onPress={() => saveDraft(post)} />
-                     <CustomButton text="Post Draft" onPress={() => postDraft(post)} />
-                     <CustomButton text="Delete" onPress={() => deleteDraft()} />
-                </View>
+                     <CustomButtonSmall text="Delete Draft" onPress={() => deleteDraft()} />
+                     <CustomButtonSmall text="Post Draft" onPress={() => postDraft(post)} />
+                    </View>
+                    </View>
             </SafeAreaView>
         );
     }
@@ -115,16 +165,23 @@ const styles = StyleSheet.create({
 	},
     header:{
         backgroundColor: "#45ded0",
-        height:200,
+        height: 200,
+        padding: 10,
     },
     body:{
-        marginTop:40,
+        marginTop: 40,
+        padding: 20,
     },
 	container: {
-		flex: 1,
+        flex: 1,
         alignItems: 'center',
+        justifyContent: 'flex-end',
         padding: 30,
-	},
+    },
+    buttonContainer: {
+        alignItems: 'center',
+        padding: 10,
+    },
 	titleContainer: {
 		paddingTop: 80,
 		paddingHorizontal: 40,
@@ -144,7 +201,16 @@ const styles = StyleSheet.create({
     	backgroundColor: '#ffffff',
         width: '90%',
 		borderColor: '#45ded0',
-		borderWidth: 1,	
+        borderWidth: 1,	
+    },
+    text: {
+        fontSize: 16,
+        color: "#696969",
+        fontWeight: 'bold',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        alignSelf: 'center',
     },
     post: {
         fontSize:16,
