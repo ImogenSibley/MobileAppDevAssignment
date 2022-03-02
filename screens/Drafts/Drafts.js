@@ -12,6 +12,7 @@ const Drafts = ({ navigation }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [errorMess, setErrorMess] = useState('');
     const [selectedStartDate, setSelectedStartDate] = useState(null);
+    const [currentDate, setCurrentDate] = useState('');
 
     useEffect(() => {
         navigation.addListener('focus', () => {
@@ -81,10 +82,24 @@ const Drafts = ({ navigation }) => {
         setErrorMess('Draft Deleted.');
     }
 
-    const onScheduleDraftPressed = () => {
-    //if (current date matches scheduled date) {
-    //postDraft
-    //} 
+    function dateDifference(dateScheduled) {
+        //gets current date and returns difference between date scheduled.
+        const currentDate = Date.now();
+        //console.log(currentDate);
+        //console.log(dateScheduled);
+        //console.log(Math.floor(dateScheduled - currentDate));
+        return Math.floor(Math.floor(dateScheduled - currentDate));
+    }
+
+    const onScheduleDraftPressed = (textInput) => {
+        //set timeout time between scheduled date and current date
+        const startDate = Date.parse(selectedStartDate ? selectedStartDate.toString() : '');
+        var intervalTime = dateDifference(startDate);
+        setTimeout(() => {
+            //console.log('Post will be called here.');
+            postDraft(textInput);
+        }, intervalTime)
+        //after interval => post draft
         setErrorMess('Post Scheduled.');
     }
     
@@ -138,7 +153,7 @@ const Drafts = ({ navigation }) => {
                      </Text>
                     </View>
                 <View style={styles.buttonContainer}>
-                        <CustomButtonSmall text="Schedule Post" onPress={onScheduleDraftPressed}/>
+                        <CustomButtonSmall text="Schedule Post" onPress={() => onScheduleDraftPressed(post)}/>
                 </View>
                 {/*Draft displayed here*/}
                 <View style={styles.postContainer}>
