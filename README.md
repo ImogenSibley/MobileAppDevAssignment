@@ -11,3 +11,5 @@ Functional components were used as they do not require a render method and are s
 useState and constructors are not used. 
 
 Version Control: Github https://github.com/ImogenSibley/MobileAppDevAssignment
+
+Calandar Picker used for scheduling drafts to post: https://github.com/stephy/CalendarPicker

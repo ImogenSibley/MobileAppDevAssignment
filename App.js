@@ -1,26 +1,24 @@
-﻿import React, { Component } from 'react';
-import { Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Ionicons } from '@expo/vector-icons';
-import 'react-native-gesture-handler';
+﻿import React, { Component } from "react";
+import { Text, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { Ionicons } from "@expo/vector-icons";
+import "react-native-gesture-handler";
 
-import Login from './screens/Login';
-import Signup from './screens/Signup';
-import Home from './screens/Home';
-import Profile from './screens/Profile';
-import Friends from './screens/Friends';
-import FriendRequests from './screens/FriendRequests';
-import Search from './screens/Search';
-import AccountSettings from './screens/AccountSettings';
-import Logout from './screens/Logout';
-import OtherProfile from './screens/OtherProfile';
-import EditPost from './screens/EditPost';
-import Drafts from './screens/Drafts';
-
-
+import Login from "./screens/Login";
+import Signup from "./screens/Signup";
+import Home from "./screens/Home";
+import Profile from "./screens/Profile";
+import Friends from "./screens/Friends";
+import FriendRequests from "./screens/FriendRequests";
+import Search from "./screens/Search";
+import AccountSettings from "./screens/AccountSettings";
+import Logout from "./screens/Logout";
+import OtherProfile from "./screens/OtherProfile";
+import EditPost from "./screens/EditPost";
+import Drafts from "./screens/Drafts";
 
 //----------------------------------------------
 //App Main
@@ -62,9 +60,9 @@ function DrawerHome() {
 
 function TabHome() {
     return ( 
-            <Tab.Navigator //main page when logged in
-                screenOptions={({ route }) => ({
-                    tabBarIcon: ({ focused, color, size }) => {
+         <Tab.Navigator //main page when logged in
+              screenOptions={({ route }) => ({
+                   tabBarIcon: ({ focused, color, size }) => {
                         let iconName;
 
                         if (route.name === 'Home') {
@@ -90,18 +88,17 @@ function TabHome() {
                         }
                         // You can return any component that you like here!
                         return <Ionicons name={iconName} size={size} color={color} />;
-                    },
-                    tabBarActiveTintColor: '#45ded0',
-                    tabBarInactiveTintColor: '#28a3a5',
-                })}
-            >
+                   },
+                   tabBarActiveTintColor: '#45ded0',
+                   tabBarInactiveTintColor: '#28a3a5',
+              })}
+         >
                 <Tab.Screen name="Home" component={DrawerHome} options={{ headerShown: false }} />
                 <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }}/>
                 <Tab.Screen name="Search" component={Search} options={{ headerShown: false }}/>
                 <Tab.Screen name="Friends" component={Friends} options={{ headerShown: false }}/>
                 <Tab.Screen name="Friend Requests" component={FriendRequests} options={{ headerShown: false }}/>
-     
-            </Tab.Navigator>
+         </Tab.Navigator>
     );
 }
 

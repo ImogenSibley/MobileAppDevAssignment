@@ -28,40 +28,46 @@ const Signup = ({ navigation }) => {
 			console.log(validateEmail(email));
 			if (validateEmail(email) == true) {
 
-				// Check password is greater than 6 chars and matches confirm pass
-				if (password.length >= 6 && password.match(passwordCheck)) {
+				// Check password is greater than 6 chars
+				if (password.length >= 6) {
+				
+					//Check passwords match
+					if (password === passwordCheck) {
 
 					// Send to server
-					return fetch("http://localhost:3333/api/1.0.0/user", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							"first_name": firstName,
-							"last_name": lastName,
-							"email": email,
-							"password": password
+						return fetch("http://localhost:3333/api/1.0.0/user", {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({
+								"first_name": firstName,
+								"last_name": lastName,
+								"email": email,
+								"password": password
+							})
+						}).then((response) => {
+							if (response.status === 201 || response.status === 200) {
+								setErrorMess('Account Created.');
+								return response.json();
+							} else if (response.status === 400) {
+								setErrorMess("This Email is already in use.");
+								throw "Bad data - maybe the email already exists?"
+							} else {
+								throw "Something went wrong: " + response.status
+							}
+						}).then((responseJson) => {
+							navigation.navigate("Login");
+						}).catch((err) => {
+							console.log(err);
 						})
-					}).then((response) => {
-						if (response.status === 201 || response.status === 200) {
-							setErrorMess('Account Created.');
-							return response.json();
-						} else if (response.status === 400) {
-							setErrorMess("This Email is already in use.");
-							throw "Bad data - maybe the email already exists?"
-						} else {
-							throw "Something went wrong: " + response.status
-						}
-					}).then((responseJson) => {
-						navigation.navigate("Login");
-					}).catch((err) => {
-						console.log(err);
-					})
-
-				} else  {
-					setErrorMess("Password is not strong enough or passwords don't match.");
-					throw "Bad data - Passwords don't match"
+					} else {
+						setErrorMess("Passwords don't match");
+						throw "Bad data - Passwords don't match"
+					}
+				} else {
+					setErrorMess("Password is not strong enough");
+					throw "Bad data - Passwords not strong enough"
 				}
 			} else {
 				setErrorMess("Invalid Email.");

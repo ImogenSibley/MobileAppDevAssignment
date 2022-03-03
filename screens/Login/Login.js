@@ -9,8 +9,8 @@ import CustomButton from '../../components/customButton';
 
 const Login = ({ navigation }) => {
 	
-	const [email, setEmail] = useState('Coffee@gmail.com');
-	const [password, setPassword] = useState('password');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
 	const [errorMess, setErrorMess] = useState('');
 
 	const onLoginPressed = async () => {
